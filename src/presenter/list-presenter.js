@@ -11,18 +11,24 @@ export default class ListPresenter {
 
   listComponent = new ListView();
 
-  constructor({ listContainer }) {
+  constructor({ listContainer, tripPointsModel }) {
     this.listContainer = listContainer;
+    this.tripPointsModel = tripPointsModel;
   }
 
   init() {
+    this.listTripPoints = [...this.tripPointsModel.getTripPoints()];
+
     render(new ListSortView(), this.listContainer);
     render(new EditPointView(), this.listContainer);
     render(new AddNewPointView(), this.listContainer);
     render(this.listComponent, this.listContainer);
 
-    for (let i = 0; i < 3; i++) {
-      render(new TripEventsItemView(), this.listComponent.getElement());
+    for (let i = 0; i < this.listTripPoints.length; i++) {
+      render(
+        new TripEventsItemView({task: this.listTripPoints[i]}),
+        this.listComponent.getElement()
+      );
     }
   }
 }
