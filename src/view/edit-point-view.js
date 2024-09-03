@@ -12,9 +12,8 @@ function createOffersSectionTemplate(selectedOffers, type) {
     return (`
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-        ${availableOffers.map((offer) => (`
-          <div class="event__available-offers">
+        <div class="event__available-offers">
+          ${availableOffers.map((offer) => (`
             <div class="event__offer-selector">
               <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="${offer.title}" ${selectedOffers.includes(offer) && 'checked'}>
               <label class="event__offer-label" for="${offer.id}">
@@ -23,7 +22,7 @@ function createOffersSectionTemplate(selectedOffers, type) {
                 <span class="event__offer-price">${offer.price}</span>
               </label>
             </div>
-        `)).join('')}
+          `)).join('')}
         </div>
       </section>
     `);
