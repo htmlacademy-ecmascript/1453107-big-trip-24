@@ -6,28 +6,56 @@ import ListSortView from '../view/list-sort-view.js';
 import EditPointView from '../view/edit-point-view.js';
 
 
+function formTripPointObj(point, destinationsArray, offersArray) {
+  const { type, destination, offers } = point;
+
+  const destinationBlock = destinationsArray.filter((destinationItem) => destinationItem.id === destination)[0];
+  const offersBlock = offersArray
+    .filter((offersItem) => offersItem.type === type)[0]
+    .offers
+    .filter((offersItem) => offers.includes(offersItem.id));
+
+  const tripPoint = {...point};
+  tripPoint.destination = destinationBlock;
+  tripPoint.offers = offersBlock;
+
+  return tripPoint;
+}
+
+
 export default class ListPresenter {
 
   listComponent = new ListView();
 
-  constructor({ listContainer, tripPointsModel }) {
+  constructor({ listContainer, MOCK_TRIP_POINTS, MOCK_DESTINATIONS, MOCK_OFFERS }) {
     this.listContainer = listContainer;
-    this.tripPointsModel = tripPointsModel;
+    this.tripPoints = MOCK_TRIP_POINTS;
+    this.destinations = MOCK_DESTINATIONS;
+    this.offers = MOCK_OFFERS;
   }
 
   init() {
-    this.listTripPoints = [...this.tripPointsModel.getTripPoints()];
 
     render(new ListSortView(), this.listContainer);
-    render(new EditPointView({ tripPoint: this.listTripPoints[0] }), this.listContainer);
-    render(new EditPointView({}), this.listContainer);
-    render(this.listComponent, this.listContainer);
 
-    for (let i = 1; i < this.listTripPoints.length; i++) {
-      render(
-        new TripEventsItemView({ tripPoint: this.listTripPoints[i] }),
-        this.listComponent.getElement()
-      );
-    }
+    this.tripPoints.forEach((point, i) => {
+      const tripPoint = formTripPointObj(point, this.destinations, this.offers);
+
+      if (i === 0) {
+        render(new EditPointView({ tripPoint }), this.listContainer);
+      }
+
+      if (i === 1) {
+        render(new EditPointView({ }), this.listContainer);
+        render(this.listComponent, this.listContainer);
+      }
+
+      if (i > 1) {
+        render(
+          new TripEventsItemView({ tripPoint }),
+          this.listComponent.getElement(),
+        );
+      }
+    });
   }
 }

@@ -4,32 +4,27 @@ import { humanizeDate, getDuration } from '../utils.js';
 function createSelectedOffersTemplate(offers) {
   return (`
     <ul class="event__selected-offers">
-    ${offers.map((offer) => {
-      if (offer.isChecked) {
-        return (`
-          <li class="event__offer">
-            <span class="event__offer-title">${offer.name}</span>
-            &plus;&euro;&nbsp;
-            <span class="event__offer-price">${offer.price}</span>
-          </li>
-        `);
-      } else {
-        return '';
-      }
-    }).join('')}
+    ${offers.map(({ title, price }) => (`
+        <li class="event__offer">
+          <span class="event__offer-title">${title}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${price}</span>
+        </li>
+      `)
+    ).join('')}
     </ul>
   `);
 }
 
 function createTripEventsItemTemplate(tripPoint) {
 
-  const { point, destination, eventStart, eventEnd, price, isFavorite, offers } = tripPoint;
+  const { type, destination, date_from: dateFrom, date_to: dateTo, base_price: price, is_favorite: isFavorite, offers: selectedOffers } = tripPoint;
 
-  const date = humanizeDate(eventStart, 'date');
-  const timeStart = humanizeDate(eventStart, 'time');
-  const timeEnd = humanizeDate(eventEnd, 'time');
-  const datetime = humanizeDate(eventStart, 'datetime');
-  const duration = getDuration(eventStart, eventEnd);
+  const date = humanizeDate(dateFrom, 'date');
+  const timeStart = humanizeDate(dateFrom, 'time');
+  const timeEnd = humanizeDate(dateTo, 'time');
+  const datetime = humanizeDate(dateFrom, 'datetime');
+  const duration = getDuration(dateFrom, dateTo);
 
   const isFavoriteClassName = isFavorite
     ? 'event__favorite-btn--active'
@@ -41,14 +36,14 @@ function createTripEventsItemTemplate(tripPoint) {
       <div class="event">
         <time class="event__date" datetime=${datetime}>${date}</time>
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${point.toLowerCase()}.png" alt="Event type icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${point} ${destination}</h3>
+        <h3 class="event__title">${type} ${destination.name}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime=${eventStart}>${timeStart}</time>
+            <time class="event__start-time" datetime=${dateFrom}>${timeStart}</time>
             &mdash;
-            <time class="event__end-time" datetime=${eventEnd}>${timeEnd}</time>
+            <time class="event__end-time" datetime=${dateTo}>${timeEnd}</time>
           </p>
           <p class="event__duration">${duration}</p>
         </div>
@@ -56,7 +51,7 @@ function createTripEventsItemTemplate(tripPoint) {
           &euro;&nbsp;<span class="event__price-value">${price}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
-        ${createSelectedOffersTemplate(offers)}
+        ${createSelectedOffersTemplate(selectedOffers)}
 
         <button class="event__favorite-btn ${isFavoriteClassName}" type="button">
           <span class="visually-hidden">Add to favorite</span>

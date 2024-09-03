@@ -1,31 +1,24 @@
 import { createElement } from '../render.js';
 import { humanizeDate } from '../utils.js';
-import { OFFERS } from '../const.js';
+import { MOCK_OFFERS } from '../mock/offers.js';
+import { BLANK_TRIP_POINT } from '../const.js';
 
-const BLANK_TRIP_POINT = {
-  point: 'Flight',
-  destination: '',
-  eventStart: new Date(Date.now()),
-  eventEnd: new Date(Date.now() + 1000 * 60 * 60),
-  price: '',
-  offers: OFFERS['Flight'],
-  description: '',
-  pictures: [],
-  isFavorite: true,
-};
 
-function createOffersSectionTemplate(offers) {
-  if (offers.length > 0) {
+function createOffersSectionTemplate(selectedOffers, type) {
+
+  const availableOffers = MOCK_OFFERS.filter((off) => off.type === type)[0].offers;
+
+  if (availableOffers.length > 0) {
     return (`
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
-        ${offers.map((offer) => (`
+        ${availableOffers.map((offer) => (`
           <div class="event__available-offers">
             <div class="event__offer-selector">
-              <input class="event__offer-checkbox  visually-hidden" id="${offer.inputId}" type="checkbox" name="${offer.inputName}" ${offer.isChecked && 'checked'}>
-              <label class="event__offer-label" for="${offer.inputId}">
-                <span class="event__offer-title">${offer.name}</span>
+              <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="${offer.title}" ${selectedOffers.includes(offer) && 'checked'}>
+              <label class="event__offer-label" for="${offer.id}">
+                <span class="event__offer-title">${offer.title}</span>
                 &plus;&euro;&nbsp;
                 <span class="event__offer-price">${offer.price}</span>
               </label>
@@ -39,7 +32,7 @@ function createOffersSectionTemplate(offers) {
   return '';
 }
 
-function createDestinationSectionTemplate(description, pictures) {
+function createDestinationSectionTemplate({ description, pictures }) {
   return (`
     <section class="event__section  event__section--destination">
 
@@ -49,11 +42,11 @@ function createDestinationSectionTemplate(description, pictures) {
       : ''
     }
 
-    ${pictures
+    ${pictures.length > 0
       ? (`<div class="event__photos-container">
         <div class="event__photos-tape">
           ${pictures.map((picture) => (`
-            <img class="event__photo" src="${picture}" alt="Event photo">
+            <img class="event__photo" src="${picture.src}" alt="${picture.description}">
           `))}
         </div>
       </div>`)
@@ -66,10 +59,10 @@ function createDestinationSectionTemplate(description, pictures) {
 
 function createEditPointTemplate(tripPoint) {
 
-  const { point, destination, eventStart, eventEnd, price, description, pictures, offers } = tripPoint;
+  const { type, destination, date_from: dateFrom, date_to: dateTo, base_price: price, offers: selectedOffers } = tripPoint;
 
-  const timeStart = humanizeDate(eventStart, 'eventTime');
-  const timeEnd = humanizeDate(eventEnd, 'eventTime');
+  const timeStart = humanizeDate(dateFrom, 'eventTime');
+  const timeEnd = humanizeDate(dateTo, 'eventTime');
 
   return(`
     <form class="event event--edit" action="#" method="post">
@@ -77,7 +70,7 @@ function createEditPointTemplate(tripPoint) {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${point.toLowerCase()}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -135,9 +128,9 @@ function createEditPointTemplate(tripPoint) {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${point}
+            ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
           <datalist id="destination-list-1">
             <option value="Amsterdam"></option>
             <option value="Geneva"></option>
@@ -169,9 +162,9 @@ function createEditPointTemplate(tripPoint) {
       </header>
       <section class="event__details">
 
-        ${createOffersSectionTemplate(offers)}
+        ${createOffersSectionTemplate(selectedOffers, type)}
 
-        ${createDestinationSectionTemplate(description, pictures)}
+        ${createDestinationSectionTemplate(destination)}
 
       </section>
     </form>
