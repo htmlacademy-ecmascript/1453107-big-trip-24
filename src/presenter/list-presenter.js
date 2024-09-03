@@ -6,7 +6,7 @@ import ListSortView from '../view/list-sort-view.js';
 import EditPointView from '../view/edit-point-view.js';
 
 
-function formTripPointObj(point, destinationsArray, offersArray) {
+function formTripPoint(point, destinationsArray, offersArray) {
   const { type, destination, offers } = point;
 
   const destinationBlock = destinationsArray.filter((destinationItem) => destinationItem.id === destination)[0];
@@ -38,24 +38,17 @@ export default class ListPresenter {
 
     render(new ListSortView(), this.listContainer);
 
-    this.tripPoints.forEach((point, i) => {
-      const tripPoint = formTripPointObj(point, this.destinations, this.offers);
+    const tripPoints = this.tripPoints.map((point) => formTripPoint(point, this.destinations, this.offers));
 
-      if (i === 0) {
-        render(new EditPointView({ tripPoint }), this.listContainer);
-      }
+    render(new EditPointView({ tripPoint: tripPoints[0] }), this.listContainer);
+    render(new EditPointView({}), this.listContainer);
+    render(this.listComponent, this.listContainer);
 
-      if (i === 1) {
-        render(new EditPointView({ }), this.listContainer);
-        render(this.listComponent, this.listContainer);
-      }
-
-      if (i > 1) {
-        render(
-          new TripEventsItemView({ tripPoint }),
-          this.listComponent.getElement(),
-        );
-      }
-    });
+    for (let i = 1; i < 4; i++) {
+      render(
+        new TripEventsItemView({ tripPoint: tripPoints[i] }),
+        this.listComponent.getElement(),
+      );
+    }
   }
 }
