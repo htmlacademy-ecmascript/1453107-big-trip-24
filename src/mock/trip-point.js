@@ -5,56 +5,52 @@ const mockTripPoints = [
   {
     point: getRandomArrayElement(POINTS),
     destination: getRandomArrayElement(CITIES),
-    eventStart: new Date('2024-03-18T10:30:00'),
-    eventEnd: new Date('2024-03-18T11:00:00'),
-    price: '20',
+    eventStart: new Date('2024-06-18T10:48:00'),
+    eventEnd: new Date('2024-06-18T11:36:00'),
+    price: '22',
     isFavorite: true,
   },
   {
     point: getRandomArrayElement(POINTS),
     destination: getRandomArrayElement(CITIES),
-    eventStart: new Date('2024-03-18T12:30:00'),
-    eventEnd: new Date('2024-03-19T12:00:00'),
-    price: '160',
+    eventStart: new Date('2024-06-18T12:24:00'),
+    eventEnd: new Date('2024-06-20T12:06:00'),
+    price: '166',
     isFavorite: false,
   },
   {
     point: getRandomArrayElement(POINTS),
     destination: getRandomArrayElement(CITIES),
-    eventStart: new Date('2024-03-19T14:30:00'),
-    eventEnd: new Date('2024-03-19T16:00:00'),
-    price: '180',
+    eventStart: new Date('2024-06-19T14:47:00'),
+    eventEnd: new Date('2024-06-19T16:35:00'),
+    price: '188',
     isFavorite: true,
   },
   {
     point: getRandomArrayElement(POINTS),
     destination: getRandomArrayElement(CITIES),
-    eventStart: new Date('2024-03-20T15:25:00'),
-    eventEnd: new Date('2024-03-20T18:00:00'),
-    price: '160',
+    eventStart: new Date('2024-06-20T15:21:00'),
+    eventEnd: new Date('2024-06-20T18:01:00'),
+    price: '177',
     isFavorite: false,
   },
   {
     point: getRandomArrayElement(POINTS),
     destination: getRandomArrayElement(CITIES),
-    eventStart: new Date('2024-03-21T12:05:00'),
-    eventEnd: new Date('2024-03-22T12:00:00'),
-    price: '700',
+    eventStart: new Date('2024-06-21T12:52:00'),
+    eventEnd: new Date('2024-06-22T12:13:00'),
+    price: '895',
     isFavorite: true,
   },
 ];
 
-
-// function getRandomTripPoint() {
-//   return getRandomArrayElement(mockTripPoints);
-// }
 
 function getRandomTripPoint() {
   const tripPoint = getRandomArrayElement(mockTripPoints);
   const {point, destination} = tripPoint;
   tripPoint.offers = OFFERS[point];
   tripPoint.description = CITIES_INFO[destination].description;
-  tripPoint.photos = CITIES_INFO[destination].photos;
+  tripPoint.pictures = CITIES_INFO[destination].pictures;
 
   return tripPoint;
 }
