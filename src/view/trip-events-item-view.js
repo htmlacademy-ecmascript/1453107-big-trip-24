@@ -10,15 +10,14 @@ function createSelectedOffersTemplate(offers) {
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${price}</span>
         </li>
-      `)
-    ).join('')}
+      `)).join('')}
     </ul>
   `);
 }
 
-function createTripEventsItemTemplate(tripPoint) {
+function createTripEventsItemTemplate(tripPoint, destination, offers) {
 
-  const { type, destination, date_from: dateFrom, date_to: dateTo, base_price: price, is_favorite: isFavorite, offers: selectedOffers } = tripPoint;
+  const { type, date_from: dateFrom, date_to: dateTo, base_price: price, is_favorite: isFavorite } = tripPoint;
 
   const date = humanizeDate(dateFrom, 'date');
   const timeStart = humanizeDate(dateFrom, 'time');
@@ -51,7 +50,8 @@ function createTripEventsItemTemplate(tripPoint) {
           &euro;&nbsp;<span class="event__price-value">${price}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
-        ${createSelectedOffersTemplate(selectedOffers)}
+
+        ${createSelectedOffersTemplate(offers)}
 
         <button class="event__favorite-btn ${isFavoriteClassName}" type="button">
           <span class="visually-hidden">Add to favorite</span>
@@ -69,12 +69,14 @@ function createTripEventsItemTemplate(tripPoint) {
 
 export default class TripEventsItemView {
 
-  constructor({ tripPoint }) {
+  constructor({ tripPoint, destination, offers }) {
     this.tripPoint = tripPoint;
+    this.destination = destination;
+    this.offers = offers;
   }
 
   getTemplate() {
-    return createTripEventsItemTemplate(this.tripPoint);
+    return createTripEventsItemTemplate(this.tripPoint, this.destination, this.offers);
   }
 
   getElement() {

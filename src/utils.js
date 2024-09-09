@@ -41,5 +41,9 @@ function getDuration(date1, date2) {
   return (`${dayDuration} ${hoursDuration} ${minutesDuration}`);
 }
 
+function capitalizeFirstLetter(word) {
+  return word[0].toUpperCase() + word.slice(1);
+}
 
-export { getRandomArrayElement, humanizeDate, getDuration };
+
+export { getRandomArrayElement, humanizeDate, getDuration, capitalizeFirstLetter};
