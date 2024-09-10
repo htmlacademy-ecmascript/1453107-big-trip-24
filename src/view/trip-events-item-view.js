@@ -1,5 +1,5 @@
-import { createElement } from '../render.js';
-import { humanizeDate, getDuration } from '../utils.js';
+import { humanizeDate, getDuration } from '../utils/point.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createSelectedOffersTemplate(offers) {
   return (`
@@ -67,27 +67,30 @@ function createTripEventsItemTemplate(tripPoint, destination, offers) {
   `);
 }
 
-export default class TripEventsItemView {
+export default class TripEventsItemView extends AbstractView {
 
-  constructor({ tripPoint, destination, offers }) {
-    this.tripPoint = tripPoint;
-    this.destination = destination;
-    this.offers = offers;
+  #tripPoint;
+  #destination;
+  #offers;
+  #handleEditClick;
+
+  constructor({ tripPoint, destination, offers, onEditClick }) {
+    super();
+    this.#tripPoint = tripPoint;
+    this.#destination = destination;
+    this.#offers = offers;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
   }
 
-  getTemplate() {
-    return createTripEventsItemTemplate(this.tripPoint, this.destination, this.offers);
+  get template() {
+    return createTripEventsItemTemplate(this.#tripPoint, this.#destination, this.#offers);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

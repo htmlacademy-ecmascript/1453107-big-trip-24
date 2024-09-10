@@ -7,9 +7,6 @@ const FORMATS = {
   'eventTime': 'DD/MM/YY HH:mm',
 };
 
-function getRandomArrayElement (array) {
-  return array[Math.floor(Math.random() * (array.length))];
-}
 
 function humanizeDate(date, format) {
   return date ? dayjs(date).format(FORMATS[format]) : '';
@@ -41,9 +38,4 @@ function getDuration(date1, date2) {
   return (`${dayDuration} ${hoursDuration} ${minutesDuration}`);
 }
 
-function capitalizeFirstLetter(word) {
-  return word[0].toUpperCase() + word.slice(1);
-}
-
-
-export { getRandomArrayElement, humanizeDate, getDuration, capitalizeFirstLetter};
+export { humanizeDate, getDuration };

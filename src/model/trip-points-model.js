@@ -1,9 +1,12 @@
 export default class TripPointsModel {
+
+  #data;
+
   constructor(data) {
-    this.data = data;
+    this.#data = data;
   }
 
-  get() {
-    return this.data;
+  get tripPoints() {
+    return this.#data;
   }
 }

@@ -1,6 +1,7 @@
-import { createElement } from '../render.js';
 import { EVENT_TYPES } from '../const.js';
-import { humanizeDate, capitalizeFirstLetter } from '../utils.js';
+import { capitalizeFirstLetter } from '../utils/common.js';
+import { humanizeDate } from '../utils/point.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 
 function createOffersSectionTemplate(selectedOffers, allOffers) {
@@ -20,7 +21,7 @@ function createOffersSectionTemplate(selectedOffers, allOffers) {
               </label>
             </div>
           `)).join('')}
-          
+
         </div>
       </section>
     `);
@@ -81,86 +82,103 @@ function createEditPointTemplate(tripPoint, destination, selectedOffers, allOffe
   const timeEnd = humanizeDate(dateTo, 'eventTime');
 
   return(`
-    <form class="event event--edit" action="#" method="post">
-      <header class="event__header">
-        <div class="event__type-wrapper">
-          <label class="event__type  event__type-btn" for="event-type-toggle-1">
-            <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
-          </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+    <li class="trip-events__item">
+      <form class="event event--edit" action="#" method="post">
+        <header class="event__header">
+          <div class="event__type-wrapper">
+            <label class="event__type  event__type-btn" for="event-type-toggle-1">
+              <span class="visually-hidden">Choose event type</span>
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+            </label>
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
-          ${createEventTypeList()}
+            ${createEventTypeList()}
 
-        </div>
+          </div>
 
-        <div class="event__field-group  event__field-group--destination">
-          <label class="event__label  event__type-output" for="event-destination-1">
-            ${type}
-          </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
-          <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
-          </datalist>
-        </div>
+          <div class="event__field-group  event__field-group--destination">
+            <label class="event__label  event__type-output" for="event-destination-1">
+              ${type}
+            </label>
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+            <datalist id="destination-list-1">
+              <option value="Amsterdam"></option>
+              <option value="Geneva"></option>
+              <option value="Chamonix"></option>
+            </datalist>
+          </div>
 
-        <div class="event__field-group  event__field-group--time">
-          <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${timeStart}">
-          &mdash;
-          <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${timeEnd}">
-        </div>
+          <div class="event__field-group  event__field-group--time">
+            <label class="visually-hidden" for="event-start-time-1">From</label>
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${timeStart}">
+            &mdash;
+            <label class="visually-hidden" for="event-end-time-1">To</label>
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${timeEnd}">
+          </div>
 
-        <div class="event__field-group  event__field-group--price">
-          <label class="event__label" for="event-price-1">
-            <span class="visually-hidden">Price</span>
-            &euro;
-          </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
-        </div>
+          <div class="event__field-group  event__field-group--price">
+            <label class="event__label" for="event-price-1">
+              <span class="visually-hidden">Price</span>
+              &euro;
+            </label>
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
-        </button>
-      </header>
-      <section class="event__details">
+          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__rollup-btn" type="button">
+            <span class="visually-hidden">Open event</span>
+          </button>
+        </header>
+        <section class="event__details">
 
-        ${createOffersSectionTemplate(selectedOffers, allOffers)}
+          ${createOffersSectionTemplate(selectedOffers, allOffers)}
 
-        ${createDestinationSectionTemplate(destination)}
+          ${createDestinationSectionTemplate(destination)}
 
-      </section>
-    </form>
+        </section>
+      </form>
+    </li>
   `);
 }
 
-export default class EditPointView {
+export default class EditPointView extends AbstractView {
 
-  constructor({ tripPoint, destination, selectedOffers, allOffers }) {
-    this.tripPoint = tripPoint;
-    this.destination = destination;
-    this.selectedOffers = selectedOffers;
-    this.allOffers = allOffers;
+  #tripPoint;
+  #destination;
+  #selectedOffers;
+  #allOffers;
+  #handleFormSubmit;
+  #handleCloseFormClick;
+
+  constructor({ tripPoint, destination, selectedOffers, allOffers, onFormSubmit, onCloseFormClick }) {
+    super();
+    this.#tripPoint = tripPoint;
+    this.#destination = destination;
+    this.#selectedOffers = selectedOffers;
+    this.#allOffers = allOffers;
+
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleCloseFormClick = onCloseFormClick;
+
+    this.element.querySelector('.event.event--edit')
+      .addEventListener('submit', this.#formSubmitHandler);
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#closeFormClickHandler);
   }
 
-  getTemplate() {
-    return createEditPointTemplate(this.tripPoint, this.destination, this.selectedOffers, this.allOffers);
+  get template() {
+    return createEditPointTemplate(this.#tripPoint, this.#destination, this.#selectedOffers, this.#allOffers);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #closeFormClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleCloseFormClick();
+  };
 }
