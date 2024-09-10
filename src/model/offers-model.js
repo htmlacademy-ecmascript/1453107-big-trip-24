@@ -1,10 +1,13 @@
 export default class OffersModel {
+
+  #data;
+
   constructor(data) {
-    this.data = data;
+    this.#data = data;
   }
 
   getOffersByType(type) {
-    return this.data
+    return this.#data
       .filter((offersItem) => offersItem.type === type)[0]
       .offers;
   }
@@ -14,7 +17,7 @@ export default class OffersModel {
       .filter((offersItem) => offers.includes(offersItem.id));
   }
 
-  get() {
-    return this.data;
+  get offers() {
+    return this.#data;
   }
 }

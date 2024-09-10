@@ -1,4 +1,4 @@
-import { render } from './render.js';
+import { render } from './framework/render.js';
 
 import { MOCK_TRIP_POINTS } from './mock/trip-points.js';
 import { MOCK_DESTINATIONS } from './mock/destinations.js';
