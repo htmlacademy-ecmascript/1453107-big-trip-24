@@ -16,4 +16,11 @@ const BLANK_DESTINATION = {
   'pictures': [],
 };
 
-export { EVENT_TYPES, BLANK_TRIP_POINT, BLANK_DESTINATION };
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
+
+export { EVENT_TYPES, BLANK_TRIP_POINT, BLANK_DESTINATION, FilterType };
