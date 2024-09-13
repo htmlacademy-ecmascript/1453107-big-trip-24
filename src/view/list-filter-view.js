@@ -24,7 +24,7 @@ function createListFilterTemplate(filters) {
 
 export default class ListFilterView extends AbstractView {
 
-  #filters;
+  #filters = null;
 
   constructor({ filters }) {
     super();

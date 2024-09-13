@@ -1,6 +1,6 @@
 export default class DestinationsModel {
 
-  #data;
+  #data = null;
 
   constructor(data) {
     this.#data = data;

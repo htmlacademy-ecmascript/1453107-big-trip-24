@@ -1,6 +1,6 @@
 export default class OffersModel {
 
-  #data;
+  #data = null;
 
   constructor(data) {
     this.#data = data;

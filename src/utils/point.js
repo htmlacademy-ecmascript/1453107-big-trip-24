@@ -7,9 +7,12 @@ const FORMATS = {
   'eventTime': 'DD/MM/YY HH:mm',
 };
 
+const MINUTES_IN_MILLISECONDS = 60 * 1000;
+
 
 function humanizeDate(date, format) {
-  return date ? dayjs(date).format(FORMATS[format]) : '';
+  const clearDate = new Date(new Date(date).setMilliseconds(new Date().getTimezoneOffset() * MINUTES_IN_MILLISECONDS));
+  return date ? dayjs(clearDate).format(FORMATS[format]) : '';
 }
 
 function getDuration(date1, date2) {

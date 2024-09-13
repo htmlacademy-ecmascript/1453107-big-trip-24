@@ -144,12 +144,12 @@ function createEditPointTemplate(tripPoint, destination, selectedOffers, allOffe
 
 export default class EditPointView extends AbstractView {
 
-  #tripPoint;
-  #destination;
-  #selectedOffers;
-  #allOffers;
-  #handleFormSubmit;
-  #handleCloseFormClick;
+  #tripPoint = null;
+  #destination = null;
+  #selectedOffers = null;
+  #allOffers = null;
+  #handleFormSubmit = null;
+  #handleCloseFormClick = null;
 
   constructor({ tripPoint, destination, selectedOffers, allOffers, onFormSubmit, onCloseFormClick }) {
     super();

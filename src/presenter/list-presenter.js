@@ -9,10 +9,10 @@ import NoTripEventsView from '../view/no-trip-events-vew.js';
 
 export default class ListPresenter {
 
-  #listContainer;
-  #tripPointsModel;
-  #destinationsModel;
-  #offersModel;
+  #listContainer = null;
+  #tripPointsModel = null;
+  #destinationsModel = null;
+  #offersModel = null;
 
   #listComponent = new ListView();
 
