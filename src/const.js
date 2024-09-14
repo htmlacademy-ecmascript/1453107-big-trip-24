@@ -16,4 +16,29 @@ const BLANK_DESTINATION = {
   'pictures': [],
 };
 
-export { EVENT_TYPES, BLANK_TRIP_POINT, BLANK_DESTINATION };
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
+
+const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS: 'offers',
+};
+
+const DisabledSortType = [SortType.EVENT, SortType.OFFERS];
+
+
+export {
+  EVENT_TYPES,
+  BLANK_TRIP_POINT,
+  BLANK_DESTINATION,
+  FilterType,
+  SortType,
+  DisabledSortType,
+};

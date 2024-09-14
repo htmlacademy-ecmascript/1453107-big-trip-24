@@ -7,9 +7,16 @@ const FORMATS = {
   'eventTime': 'DD/MM/YY HH:mm',
 };
 
+const MINUTES_IN_MILLISECONDS = 60 * 1000;
+
+
+function clearTimezoneOffset(date) {
+  return new Date(new Date(date).setMilliseconds(new Date().getTimezoneOffset() * MINUTES_IN_MILLISECONDS));
+}
 
 function humanizeDate(date, format) {
-  return date ? dayjs(date).format(FORMATS[format]) : '';
+  const clearDate = clearTimezoneOffset(date);
+  return date ? dayjs(clearDate).format(FORMATS[format]) : '';
 }
 
 function getDuration(date1, date2) {
@@ -38,4 +45,52 @@ function getDuration(date1, date2) {
   return (`${dayDuration} ${hoursDuration} ${minutesDuration}`);
 }
 
-export { humanizeDate, getDuration };
+
+function sortEventsByDay (eventA, eventB) {
+
+  if (dayjs(eventA.date_from).diff(dayjs(eventB.date_from)) < 0) {
+    return -1;
+  }
+
+  if (dayjs(eventA.date_from).diff(dayjs(eventB.date_from)) > 0) {
+    return 1;
+  }
+
+  return 0;
+}
+
+function sortEventsByTime (eventA, eventB) {
+
+  if (dayjs(eventA.date_from).diff(dayjs(eventA.date_to)) <
+      dayjs(eventB.date_from).diff(dayjs(eventB.date_to))) {
+    return -1;
+  }
+
+  if (dayjs(eventA.date_from).diff(dayjs(eventA.date_to)) >
+      dayjs(eventB.date_from).diff(dayjs(eventB.date_to))) {
+    return 1;
+  }
+
+  return 0;
+}
+
+function sortEventsByPrice (eventA, eventB) {
+
+  if (eventA.base_price < eventB.base_price) {
+    return -1;
+  }
+
+  if (eventA.base_price > eventB.base_price) {
+    return 1;
+  }
+
+  return 0;
+}
+
+export {
+  humanizeDate,
+  getDuration,
+  sortEventsByDay,
+  sortEventsByTime,
+  sortEventsByPrice
+};

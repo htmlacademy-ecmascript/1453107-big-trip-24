@@ -4,6 +4,8 @@ import { MOCK_TRIP_POINTS } from './mock/trip-points.js';
 import { MOCK_DESTINATIONS } from './mock/destinations.js';
 import { MOCK_OFFERS } from './mock/offers.js';
 
+import { generateFilter } from './mock/filter.js';
+
 import ListFilterView from './view/list-filter-view.js';
 import ListPresenter from './presenter/list-presenter.js';
 import TripPointsModel from './model/trip-points-model.js';
@@ -25,8 +27,10 @@ const listPresenter = new ListPresenter({
   offersModel
 });
 
+const filters = generateFilter();
 
-render(new ListFilterView(), tripFiltersElement);
+
+render(new ListFilterView({filters}), tripFiltersElement);
 
 
 listPresenter.init();

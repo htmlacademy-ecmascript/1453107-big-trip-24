@@ -69,10 +69,10 @@ function createTripEventsItemTemplate(tripPoint, destination, offers) {
 
 export default class TripEventsItemView extends AbstractView {
 
-  #tripPoint;
-  #destination;
-  #offers;
-  #handleEditClick;
+  #tripPoint = null;
+  #destination = null;
+  #offers = null;
+  #handleEditClick = null;
 
   constructor({ tripPoint, destination, offers, onEditClick }) {
     super();

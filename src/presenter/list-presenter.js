@@ -6,17 +6,23 @@ import ListSortView from '../view/list-sort-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import NoTripEventsView from '../view/no-trip-events-vew.js';
 
+import { SortType } from '../const.js';
+import { sortEventsByDay, sortEventsByTime, sortEventsByPrice } from '../utils/point.js';
+
 
 export default class ListPresenter {
 
-  #listContainer;
-  #tripPointsModel;
-  #destinationsModel;
-  #offersModel;
+  #listContainer = null;
+  #tripPointsModel = null;
+  #destinationsModel = null;
+  #offersModel = null;
 
   #listComponent = new ListView();
+  #sortComponent = null;
 
   #tripPoints = [];
+  #sourcedTripPoints = [];
+  #currentSortType = SortType.DAY;
 
   constructor({ listContainer, tripPointsModel, destinationsModel, offersModel }) {
     this.#listContainer = listContainer;
@@ -27,11 +33,14 @@ export default class ListPresenter {
 
   init() {
     this.#tripPoints = [...this.#tripPointsModel.tripPoints];
+
+    this.#sourcedTripPoints = [...this.#tripPointsModel.tripPoints];
+
     this.#renderList();
   }
 
   #renderList() {
-    render(new ListSortView(), this.#listContainer);
+    this.#renderSort();
 
     if (this.#tripPoints.length === 0) {
       render(new NoTripEventsView, this.#listContainer);
@@ -42,6 +51,42 @@ export default class ListPresenter {
     for (let i = 0; i < 3; i++) {
       this.#renderTripEvent(this.#tripPoints[i]);
     }
+  }
+
+  #sortTripPoints(sortType) {
+
+    switch (sortType) {
+      case SortType.DAY:
+        this.#tripPoints.sort(sortEventsByDay);
+        break;
+      case SortType.TIME:
+        this.#tripPoints.sort(sortEventsByTime);
+        break;
+      case SortType.PRICE:
+        this.#tripPoints.sort(sortEventsByPrice);
+        break;
+      default:
+        this.#tripPoints = [...this.#sourcedTripPoints];
+    }
+
+    this.#currentSortType = sortType;
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortTripPoints(sortType);
+  };
+
+  #renderSort() {
+    this.#sortComponent = new ListSortView({
+      onSortTypeChange: this.#handleSortTypeChange,
+      currentSortType: this.#currentSortType,
+    });
+
+    render(this.#sortComponent, this.#listContainer);
   }
 
   #getAllTripEventData(tripPoint) {

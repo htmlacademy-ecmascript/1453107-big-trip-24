@@ -1,6 +1,6 @@
 export default class TripPointsModel {
 
-  #data;
+  #data = null;
 
   constructor(data) {
     this.#data = data;
