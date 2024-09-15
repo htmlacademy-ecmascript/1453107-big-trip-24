@@ -8,7 +8,7 @@ function createNoTripEventsTemplate() {
 }
 
 
-export default class NoTripEventsView extends AbstractView {
+export default class NoTripPointsView extends AbstractView {
   get template() {
     return createNoTripEventsTemplate();
   }

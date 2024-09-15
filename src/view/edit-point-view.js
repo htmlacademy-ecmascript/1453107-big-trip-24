@@ -5,6 +5,7 @@ import AbstractView from '../framework/view/abstract-view.js';
 
 
 function createOffersSectionTemplate(selectedOffers, allOffers) {
+
   if (allOffers.length > 0) {
     return (`
       <section class="event__section  event__section--offers">
@@ -74,7 +75,7 @@ function createEventTypeList() {
   `);
 }
 
-function createEditPointTemplate(tripPoint, destination, selectedOffers, allOffers) {
+function createEditPointTemplate(tripPoint) {
 
   const { type, date_from: dateFrom, date_to: dateTo, base_price: price } = tripPoint;
 
@@ -100,7 +101,7 @@ function createEditPointTemplate(tripPoint, destination, selectedOffers, allOffe
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${tripPoint.destination.name}" list="destination-list-1">
             <datalist id="destination-list-1">
               <option value="Amsterdam"></option>
               <option value="Geneva"></option>
@@ -132,9 +133,9 @@ function createEditPointTemplate(tripPoint, destination, selectedOffers, allOffe
         </header>
         <section class="event__details">
 
-          ${createOffersSectionTemplate(selectedOffers, allOffers)}
+          ${createOffersSectionTemplate(tripPoint.offers, tripPoint.allOffers)}
 
-          ${createDestinationSectionTemplate(destination)}
+          ${createDestinationSectionTemplate(tripPoint.destination)}
 
         </section>
       </form>
@@ -145,18 +146,12 @@ function createEditPointTemplate(tripPoint, destination, selectedOffers, allOffe
 export default class EditPointView extends AbstractView {
 
   #tripPoint = null;
-  #destination = null;
-  #selectedOffers = null;
-  #allOffers = null;
   #handleFormSubmit = null;
   #handleCloseFormClick = null;
 
-  constructor({ tripPoint, destination, selectedOffers, allOffers, onFormSubmit, onCloseFormClick }) {
+  constructor({ tripPoint, onFormSubmit, onCloseFormClick }) {
     super();
     this.#tripPoint = tripPoint;
-    this.#destination = destination;
-    this.#selectedOffers = selectedOffers;
-    this.#allOffers = allOffers;
 
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseFormClick = onCloseFormClick;
@@ -169,12 +164,12 @@ export default class EditPointView extends AbstractView {
   }
 
   get template() {
-    return createEditPointTemplate(this.#tripPoint, this.#destination, this.#selectedOffers, this.#allOffers);
+    return createEditPointTemplate(this.#tripPoint);
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(this.#tripPoint);
   };
 
   #closeFormClickHandler = (evt) => {
