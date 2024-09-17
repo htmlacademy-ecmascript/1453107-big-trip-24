@@ -46,41 +46,41 @@ function getDuration(date1, date2) {
 }
 
 
-function sortEventsByDay (eventA, eventB) {
+function sortTripPointsByDay (pointA, pointB) {
 
-  if (dayjs(eventA.date_from).diff(dayjs(eventB.date_from)) < 0) {
+  if (dayjs(pointA.date_from).diff(dayjs(pointB.date_from)) < 0) {
     return -1;
   }
 
-  if (dayjs(eventA.date_from).diff(dayjs(eventB.date_from)) > 0) {
+  if (dayjs(pointA.date_from).diff(dayjs(pointB.date_from)) > 0) {
     return 1;
   }
 
   return 0;
 }
 
-function sortEventsByTime (eventA, eventB) {
+function sortTripPointsByTime (pointA, pointB) {
 
-  if (dayjs(eventA.date_from).diff(dayjs(eventA.date_to)) <
-      dayjs(eventB.date_from).diff(dayjs(eventB.date_to))) {
+  if (dayjs(pointA.date_from).diff(dayjs(pointA.date_to)) <
+      dayjs(pointB.date_from).diff(dayjs(pointB.date_to))) {
     return -1;
   }
 
-  if (dayjs(eventA.date_from).diff(dayjs(eventA.date_to)) >
-      dayjs(eventB.date_from).diff(dayjs(eventB.date_to))) {
+  if (dayjs(pointA.date_from).diff(dayjs(pointA.date_to)) >
+      dayjs(pointB.date_from).diff(dayjs(pointB.date_to))) {
     return 1;
   }
 
   return 0;
 }
 
-function sortEventsByPrice (eventA, eventB) {
+function sortTripPointsByPrice (pointA, pointB) {
 
-  if (eventA.base_price < eventB.base_price) {
+  if (pointA.base_price > pointB.base_price) {
     return -1;
   }
 
-  if (eventA.base_price > eventB.base_price) {
+  if (pointA.base_price < pointB.base_price) {
     return 1;
   }
 
@@ -90,7 +90,7 @@ function sortEventsByPrice (eventA, eventB) {
 export {
   humanizeDate,
   getDuration,
-  sortEventsByDay,
-  sortEventsByTime,
-  sortEventsByPrice
+  sortTripPointsByDay,
+  sortTripPointsByTime,
+  sortTripPointsByPrice
 };

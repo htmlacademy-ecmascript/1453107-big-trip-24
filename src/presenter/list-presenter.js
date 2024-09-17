@@ -1,5 +1,5 @@
 import { SortType } from '../const.js';
-import { sortEventsByDay, sortEventsByTime, sortEventsByPrice } from '../utils/point.js';
+import { sortTripPointsByDay, sortTripPointsByTime, sortTripPointsByPrice } from '../utils/point.js';
 import { updateItem } from '../utils/common.js';
 import { render, RenderPosition } from '../framework/render.js';
 
@@ -43,7 +43,7 @@ export default class ListPresenter {
   }
 
   #renderTripPoints() {
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < this.#tripPoints.length; i++) {
       this.#renderTripPoint(this.#tripPoints[i]);
     }
   }
@@ -72,13 +72,13 @@ export default class ListPresenter {
 
     switch (sortType) {
       case SortType.DAY:
-        this.#tripPoints.sort(sortEventsByDay);
+        this.#tripPoints.sort(sortTripPointsByDay);
         break;
       case SortType.TIME:
-        this.#tripPoints.sort(sortEventsByTime);
+        this.#tripPoints.sort(sortTripPointsByTime);
         break;
       case SortType.PRICE:
-        this.#tripPoints.sort(sortEventsByPrice);
+        this.#tripPoints.sort(sortTripPointsByPrice);
         break;
       default:
         this.#tripPoints = [...this.#sourcedTripPoints];
@@ -93,6 +93,8 @@ export default class ListPresenter {
     }
 
     this.#sortTripPoints(sortType);
+    this.#clearTripPointList();
+    this.#renderTripPoints();
   };
 
   #handleModeChange = () => {
@@ -101,6 +103,7 @@ export default class ListPresenter {
 
   #handleTripPointChange = (updatedTripPoint) => {
     this.#tripPoints = updateItem(this.#tripPoints, updatedTripPoint);
+    this.#sourcedTripPoints = updateItem(this.#sourcedTripPoints, updatedTripPoint);
     this.#tripPointsPresenter.get(updatedTripPoint.id).init(updatedTripPoint);
   };
 

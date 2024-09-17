@@ -48,12 +48,10 @@ export default class TripPointPresenter {
       return;
     }
 
-    // if (this.#tripPointListContainer.contains(prevTripPointComponent.element)) {
     if (this.#mode === Mode.DEFAULT) {
       replace(this.#tripPointComponent, prevTripPointComponent);
     }
 
-    // if (this.#tripPointListContainer.contains(prevTripPointEditComponent.element)) {
     if (this.#mode === Mode.EDITING) {
       replace(this.#tripPointEditComponent, prevTripPointEditComponent);
     }
