@@ -15,7 +15,7 @@ function createSelectedOffersTemplate(offers) {
   `);
 }
 
-function createTripPointTemplate(tripPoint) {
+function createTripPointTemplate(tripPoint, destination, offers) {
 
   const {
     type,
@@ -43,7 +43,7 @@ function createTripPointTemplate(tripPoint) {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${tripPoint.destination.name}</h3>
+        <h3 class="event__title">${type} ${destination ? destination.name : ''}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime=${dateFrom}>${timeStart}</time>
@@ -57,7 +57,7 @@ function createTripPointTemplate(tripPoint) {
         </p>
         <h4 class="visually-hidden">Offers:</h4>
 
-        ${createSelectedOffersTemplate(tripPoint.offers)}
+        ${createSelectedOffersTemplate(offers)}
 
         <button class="event__favorite-btn ${isFavoriteClassName}" type="button">
           <span class="visually-hidden">Add to favorite</span>
@@ -76,12 +76,24 @@ function createTripPointTemplate(tripPoint) {
 export default class TripPointView extends AbstractView {
 
   #tripPoint = null;
+  #destination = null;
+  #offers = null;
+
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor({ tripPoint, onEditClick, onFavoriteClick }) {
+  #destinationsModel = null;
+  #offersModel = null;
+
+  constructor({ tripPoint, destinationsModel, offersModel, onEditClick, onFavoriteClick }) {
     super();
     this.#tripPoint = tripPoint;
+
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
+
+    this.#destination = this.#destinationsModel.getDestinationInfoById(tripPoint.destination);
+    this.#offers = this.#offersModel.getSelectedOffersByType(tripPoint.type, tripPoint.offers);
 
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
@@ -94,7 +106,7 @@ export default class TripPointView extends AbstractView {
   }
 
   get template() {
-    return createTripPointTemplate(this.#tripPoint);
+    return createTripPointTemplate(this.#tripPoint, this.#destination, this.#offers);
   }
 
   #editClickHandler = (evt) => {

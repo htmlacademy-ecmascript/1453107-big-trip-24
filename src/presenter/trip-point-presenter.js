@@ -19,10 +19,17 @@ export default class TripPointPresenter {
   #tripPoint = null;
   #mode = Mode.DEFAULT;
 
-  constructor({ tripPointListContainer, onDataChange, onModeChange }) {
+  #destinationsModel = null;
+  #offersModel = null;
+
+  constructor({ tripPointListContainer, onDataChange, onModeChange, destinationsModel, offersModel }) {
     this.#tripPointListContainer = tripPointListContainer;
+
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
+
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
   }
 
   init(tripPoint) {
@@ -33,13 +40,17 @@ export default class TripPointPresenter {
 
     this.#tripPointComponent = new TripPointView({
       tripPoint,
+      destinationsModel: this.#destinationsModel,
+      offersModel: this.#offersModel,
       onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#tripPointEditComponent = new EditPointView({
       tripPoint,
-      onFormSubmit:this.#handleFormSubmit,
+      destinationsModel: this.#destinationsModel,
+      offersModel: this.#offersModel,
+      onFormSubmit: this.#handleFormSubmit,
       onCloseFormClick: this.#handleFormCloseClick,
     });
 
@@ -67,6 +78,7 @@ export default class TripPointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#tripPointEditComponent.reset(this.#tripPoint);
       this.#replaceFormToCard();
     }
   }
@@ -108,5 +120,4 @@ export default class TripPointPresenter {
   #handleFormCloseClick = () => {
     this.#replaceFormToCard();
   };
-
 }
