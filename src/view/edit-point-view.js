@@ -1,62 +1,60 @@
 import { EVENT_TYPES } from '../const.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
 import { humanizeDate } from '../utils/point.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 
 function createOffersSectionTemplate(selectedOffers, allOffers) {
 
-  if (allOffers.length > 0) {
-    return (`
-      <section class="event__section  event__section--offers">
-        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-        <div class="event__available-offers">
-
-          ${allOffers.map((offer) => (`
-            <div class="event__offer-selector">
-              <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="${offer.title}" ${selectedOffers.includes(offer) && 'checked'}>
-              <label class="event__offer-label" for="${offer.id}">
-                <span class="event__offer-title">${offer.title}</span>
-                &plus;&euro;&nbsp;
-                <span class="event__offer-price">${offer.price}</span>
-              </label>
-            </div>
-          `)).join('')}
-
-        </div>
-      </section>
-    `);
-  }
-
-  return '';
-}
-
-function createDestinationSectionTemplate({ description, pictures }) {
   return (`
-    <section class="event__section  event__section--destination">
+    <section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
 
-    ${description
-      ? (`<h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${description}</p>`)
-      : ''
-    }
+        ${allOffers.map((offer) => (`
+          <div class="event__offer-selector">
+            <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="${offer.title}" ${selectedOffers.includes(offer) && 'checked'}>
+            <label class="event__offer-label" for="${offer.id}">
+              <span class="event__offer-title">${offer.title}</span>
+              &plus;&euro;&nbsp;
+              <span class="event__offer-price">${offer.price}</span>
+            </label>
+          </div>
+        `)).join('')}
 
-    ${pictures.length > 0
-      ? (`<div class="event__photos-container">
-        <div class="event__photos-tape">
-          ${pictures.map((picture) => (`
-            <img class="event__photo" src="${picture.src}" alt="${picture.description}">
-          `))}
-        </div>
-      </div>`)
-      : ''
-    }
-
+      </div>
     </section>
   `);
 }
 
-function createEventTypeList() {
+function createDestinationSectionTemplate({ description, pictures }) {
+  return (`
+    ${description || pictures.length > 0 ? (`
+      <section class="event__section  event__section--destination">
+
+      ${description
+        ? (`<h3 class="event__section-title  event__section-title--destination">Destination</h3>
+          <p class="event__destination-description">${description}</p>`)
+        : ''
+      }
+
+      ${pictures.length > 0
+        ? (`<div class="event__photos-container">
+          <div class="event__photos-tape">
+            ${pictures.map((picture) => (`
+              <img class="event__photo" src="${picture.src}" alt="${picture.description}">
+            `))}
+          </div>
+        </div>`)
+        : ''
+      }
+
+      </section>
+    `) : ''}
+  `);
+}
+
+function createEventTypeList({ activeType }) {
 
   return (`
     <div class="event__type-list">
@@ -65,7 +63,14 @@ function createEventTypeList() {
 
         ${EVENT_TYPES.map((type) => (`
           <div class="event__type-item">
-            <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === 'flight' && 'checked'}>
+            <input
+            id="event-type-${type}-1"
+            class="event__type-input
+            visually-hidden"
+            type="radio"
+            name="event-type"
+            value="${type}"
+            ${type === activeType ? 'checked' : ''}>
             <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizeFirstLetter(type)}</label>
           </div>
           `)).join('')}
@@ -75,9 +80,9 @@ function createEventTypeList() {
   `);
 }
 
-function createEditPointTemplate(tripPoint) {
+function createEditPointTemplate(tripPoint, destinationNames) {
 
-  const { type, date_from: dateFrom, date_to: dateTo, base_price: price } = tripPoint;
+  const { type, date_from: dateFrom, date_to: dateTo, base_price: price, destination, offers, allOffers } = tripPoint;
 
   const timeStart = humanizeDate(dateFrom, 'eventTime');
   const timeEnd = humanizeDate(dateTo, 'eventTime');
@@ -93,7 +98,7 @@ function createEditPointTemplate(tripPoint) {
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
-            ${createEventTypeList()}
+            ${createEventTypeList({ activeType: type })}
 
           </div>
 
@@ -101,11 +106,19 @@ function createEditPointTemplate(tripPoint) {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${tripPoint.destination.name}" list="destination-list-1">
+            <input
+              class="event__input
+              event__input--destination"
+              id="event-destination-1"
+              type="text"
+              name="event-destination"
+              value="${destination ? destination.name : ''}"
+              list="destination-list-1"
+            >
             <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
+              ${destinationNames.map((destinationName) => (`
+                <option value="${destinationName}"></option>
+              `)).join('')}
             </datalist>
           </div>
 
@@ -133,9 +146,9 @@ function createEditPointTemplate(tripPoint) {
         </header>
         <section class="event__details">
 
-          ${createOffersSectionTemplate(tripPoint.offers, tripPoint.allOffers)}
+          ${createOffersSectionTemplate(offers, allOffers)}
 
-          ${createDestinationSectionTemplate(tripPoint.destination)}
+          ${destination ? createDestinationSectionTemplate(destination) : ''}
 
         </section>
       </form>
@@ -143,37 +156,158 @@ function createEditPointTemplate(tripPoint) {
   `);
 }
 
-export default class EditPointView extends AbstractView {
+export default class EditPointView extends AbstractStatefulView {
 
-  #tripPoint = null;
   #handleFormSubmit = null;
   #handleCloseFormClick = null;
 
-  constructor({ tripPoint, onFormSubmit, onCloseFormClick }) {
-    super();
-    this.#tripPoint = tripPoint;
+  #destinationsModel = null;
+  #offersModel = null;
 
+  #destination = null;
+  #offers = null;
+  #allOffers = null;
+  #destinationNames = null;
+
+  constructor({ tripPoint, destinationsModel, offersModel, onFormSubmit, onCloseFormClick }) {
+
+    super();
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseFormClick = onCloseFormClick;
 
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
+
+    this.#destination = this.#destinationsModel.getDestinationInfoById(tripPoint.destination);
+    this.#offers = this.#offersModel.getSelectedOffersByType(tripPoint.type, tripPoint.offers);
+    this.#allOffers = this.#offersModel.getOffersByType(tripPoint.type);
+    this.#destinationNames = this.#destinationsModel.getDestinationNames();
+
+    this._setState(EditPointView.parseTripPointToState(tripPoint, this.#destination, this.#offers, this.#allOffers));
+
+    this._restoreHandlers();
+  }
+
+  get template() {
+    return createEditPointTemplate(this._state, this.#destinationNames);
+  }
+
+  reset(tripPoint) {
+    const destination = this.#destinationsModel.getDestinationInfoById(tripPoint.destination);
+    const offers = this.#offersModel.getSelectedOffersByType(tripPoint.type, tripPoint.offers);
+    const allOffers = this.#offersModel.getOffersByType(tripPoint.type);
+
+    this.updateElement(
+      EditPointView.parseTripPointToState(tripPoint, destination, offers, allOffers)
+    );
+  }
+
+  _restoreHandlers() {
     this.element.querySelector('.event.event--edit')
       .addEventListener('submit', this.#formSubmitHandler);
 
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#closeFormClickHandler);
+
+    this.element.querySelector('.event.event--edit')
+      .addEventListener('change', this.#typeToggleHandler);
+
+    this.element.querySelector('.event__available-offers')
+      .addEventListener('change', this.#offersToggleHandler);
+
+    this.element.querySelector('.event__input.event__input--destination')
+      .addEventListener('input', this.#destinationInputHandler);
+
+    this.element.querySelector('.event__input.event__input--price')
+      .addEventListener('change', this.#priceChangeHandler);
   }
 
-  get template() {
-    return createEditPointTemplate(this.#tripPoint);
-  }
+  #priceChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    this.updateElement({
+      base_price: Number(evt.target.value),
+    });
+  };
+
+  #offersToggleHandler = (evt) => {
+    if (evt.target.type !== 'checkbox') {
+      return;
+    }
+    evt.preventDefault();
+
+    let offers = this._state.offers;
+
+    const selectedOffer = this._state.allOffers.find((offer) => offer.id === evt.target.id);
+    const isActive = this._state.offers.some((offer) => offer.id === evt.target.id);
+
+    if (isActive) {
+      offers = offers.filter((offer) => offer.id !== selectedOffer.id);
+    } else {
+      offers.push(selectedOffer);
+    }
+
+    this.updateElement({
+      offers,
+    });
+  };
+
+  #typeToggleHandler = (evt) => {
+    if (evt.target.type !== 'radio') {
+      return;
+    }
+    evt.preventDefault();
+
+    const allOffers = this.#offersModel.getOffersByType(evt.target.value);
+    this.updateElement({
+      type: evt.target.value,
+      offers: [],
+      allOffers
+    });
+  };
+
+  #destinationInputHandler = (evt) => {
+    evt.preventDefault();
+
+    this._setState({
+      destination: evt.target.value,
+    });
+
+    if (this.#destinationNames.includes(evt.target.value)) {
+      const destination = this.#destinationsModel.getDestinationInfoByName(evt.target.value);
+      this.updateElement({
+        destination,
+      });
+    }
+  };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this.#tripPoint);
+    this.#handleFormSubmit(EditPointView.parseStateToTripPoint(this._state));
   };
 
   #closeFormClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleCloseFormClick();
   };
+
+  static parseTripPointToState(tripPoint, destination, offers, allOffers) {
+    return {
+      ...tripPoint,
+      destination,
+      offers,
+      allOffers,
+    };
+  }
+
+  static parseStateToTripPoint(state) {
+    const tripPoint = { ...state };
+
+    tripPoint.offers = tripPoint.offers.map((offer) => offer.id);
+    tripPoint.destination = tripPoint.destination.id;
+
+    delete tripPoint.allOffers;
+
+    return tripPoint;
+  }
 }

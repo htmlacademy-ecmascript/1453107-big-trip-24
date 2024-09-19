@@ -116,14 +116,6 @@ export default class ListPresenter {
     render(this.#sortComponent, this.#listContainer, RenderPosition.AFTERBEGIN);
   }
 
-  #getAllTripEventData(tripPoint) {
-    return ({
-      destination: this.#destinationsModel.getDestinationInfo(tripPoint.destination),
-      offers: this.#offersModel.getSelectedOffersByType(tripPoint.type, tripPoint.offers),
-      allOffers: this.#offersModel.getOffersByType(tripPoint.type),
-    });
-  }
-
   #clearTripPointList() {
     this.#tripPointsPresenter.forEach((presenter) => presenter.destroy());
     this.#tripPointsPresenter.clear();
@@ -133,15 +125,13 @@ export default class ListPresenter {
     const tripPointPresenter = new TripPointPresenter({
       tripPointListContainer: this.#listComponent.element,
       onDataChange: this.#handleTripPointChange,
-      onModeChange: this.#handleModeChange
+      onModeChange: this.#handleModeChange,
+      destinationsModel: this.#destinationsModel,
+      offersModel: this.#offersModel,
     });
-
-    const { destination, offers, allOffers } = this.#getAllTripEventData(tripPoint);
-    tripPoint = {...tripPoint, destination: destination, offers, allOffers};
 
     tripPointPresenter.init(tripPoint);
 
     this.#tripPointsPresenter.set(tripPoint.id, tripPointPresenter);
   }
-
 }

@@ -6,9 +6,18 @@ export default class DestinationsModel {
     this.#data = data;
   }
 
-  getDestinationInfo(destination) {
+  getDestinationInfoById(destinationId) {
     return this.#data
-      .filter((destinationItem) => destinationItem.id === destination)[0];
+      .filter((destinationItem) => destinationItem.id === destinationId)[0];
+  }
+
+  getDestinationInfoByName(destinationName) {
+    return this.#data
+      .filter((destinationItem) => destinationItem.name === destinationName)[0];
+  }
+
+  getDestinationNames() {
+    return this.#data.map((destination) => destination.name);
   }
 
   get destinations() {
