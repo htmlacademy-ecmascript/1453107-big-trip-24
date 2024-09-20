@@ -150,7 +150,7 @@ function createTripPointEditTemplate(tripPoint, destinationNames) {
         </header>
         <section class="event__details">
 
-          ${offers.length > 0 ? createOffersSectionTemplate(offers, allOffers) : ''}
+          ${allOffers.length > 0 ? createOffersSectionTemplate(offers, allOffers) : ''}
 
           ${destination ? createDestinationSectionTemplate(destination) : ''}
 
