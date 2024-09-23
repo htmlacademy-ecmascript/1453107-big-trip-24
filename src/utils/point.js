@@ -1,4 +1,8 @@
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
+
 
 const FORMATS = {
   'date': 'MMM D',
@@ -7,20 +11,19 @@ const FORMATS = {
   'eventTime': 'DD/MM/YY HH:mm',
 };
 
-const MINUTES_IN_MILLISECONDS = 60 * 1000;
-
-
-function clearTimezoneOffset(date) {
-  return new Date(new Date(date).setMilliseconds(new Date().getTimezoneOffset() * MINUTES_IN_MILLISECONDS));
+function convertLocalToUtc(localDate) {
+  const date = new Date(localDate);
+  const timezoneOffset = new Date().getTimezoneOffset() / 60;
+  const changedDate = date.setHours(date.getHours() - timezoneOffset);
+  return new Date(changedDate).toUTCString();
 }
 
 function humanizeDate(date, format) {
-  const clearDate = clearTimezoneOffset(date);
-  return date ? dayjs(clearDate).format(FORMATS[format]) : '';
+  return date ? dayjs(date).utc().format(FORMATS[format]) : '';
 }
 
 function getDuration(date1, date2) {
-  const differensInMinutes = dayjs(date2).diff(dayjs(date1), 'minute');
+  const differensInMinutes = dayjs.utc(date2).diff(dayjs.utc(date1), 'minute');
 
   let minutesLeft = differensInMinutes;
 
@@ -30,29 +33,64 @@ function getDuration(date1, date2) {
 
   if (minutesLeft >= 1440) {
     const days = Math.floor(minutesLeft / 1440);
-    dayDuration = `${days}D`;
+    dayDuration = days;
     minutesLeft = minutesLeft - days * 1440;
   }
 
   if (minutesLeft >= 60) {
     const hours = Math.floor(minutesLeft / 60);
-    hoursDuration = `${hours}H`;
+    hoursDuration = hours;
     minutesLeft = minutesLeft - hours * 60;
   }
 
-  minutesDuration = `${minutesLeft}M`;
+  minutesDuration = minutesLeft;
 
-  return (`${dayDuration} ${hoursDuration} ${minutesDuration}`);
+  const DATE = [
+    {
+      name: 'days',
+      number: dayDuration,
+      token: 'D'
+    },
+    {
+      name: 'hours',
+      number: hoursDuration,
+      token: 'H'
+    },
+    {
+      name: 'minutes',
+      number: minutesDuration,
+      token: 'M'
+    },
+  ];
+
+  let timeDuration = '';
+
+  DATE.forEach(({ number, token }) => {
+
+    if (Number(number) === 0 && timeDuration !== '') {
+      number = '00';
+    }
+
+    if (number <= 9 && number >= 1) {
+      number = `0${number}`;
+    }
+
+    if (number) {
+      timeDuration += `${number}${token} `;
+    }
+  });
+
+  return timeDuration.trim();
 }
 
 
 function sortTripPointsByDay (pointA, pointB) {
 
-  if (dayjs(pointA.date_from).diff(dayjs(pointB.date_from)) < 0) {
+  if (dayjs.utc(pointA.date_from).diff(dayjs.utc(pointB.date_from)) < 0) {
     return -1;
   }
 
-  if (dayjs(pointA.date_from).diff(dayjs(pointB.date_from)) > 0) {
+  if (dayjs.utc(pointA.date_from).diff(dayjs.utc(pointB.date_from)) > 0) {
     return 1;
   }
 
@@ -61,13 +99,13 @@ function sortTripPointsByDay (pointA, pointB) {
 
 function sortTripPointsByTime (pointA, pointB) {
 
-  if (dayjs(pointA.date_from).diff(dayjs(pointA.date_to)) <
-      dayjs(pointB.date_from).diff(dayjs(pointB.date_to))) {
+  if (dayjs.utc(pointA.date_from).diff(dayjs.utc(pointA.date_to)) <
+      dayjs.utc(pointB.date_from).diff(dayjs.utc(pointB.date_to))) {
     return -1;
   }
 
-  if (dayjs(pointA.date_from).diff(dayjs(pointA.date_to)) >
-      dayjs(pointB.date_from).diff(dayjs(pointB.date_to))) {
+  if (dayjs.utc(pointA.date_from).diff(dayjs.utc(pointA.date_to)) >
+      dayjs.utc(pointB.date_from).diff(dayjs.utc(pointB.date_to))) {
     return 1;
   }
 
@@ -88,6 +126,7 @@ function sortTripPointsByPrice (pointA, pointB) {
 }
 
 export {
+  convertLocalToUtc,
   humanizeDate,
   getDuration,
   sortTripPointsByDay,

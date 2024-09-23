@@ -1,6 +1,6 @@
 import { render, replace, remove } from '../framework/render.js';
 import TripPointView from '../view/trip-point-view.js';
-import EditPointView from '../view/edit-point-view.js';
+import TripPointEditView from '../view/trip-point-edit-view.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -46,7 +46,7 @@ export default class TripPointPresenter {
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
-    this.#tripPointEditComponent = new EditPointView({
+    this.#tripPointEditComponent = new TripPointEditView({
       tripPoint,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
