@@ -67,7 +67,7 @@ export default class ListPresenter {
   #renderNoTripPoints() {
     this.#noTripPointsComponent = new NoTripPointsView({
       filterType: this.#filterType,
-    })
+    });
 
     render(this.#noTripPointsComponent, this.#listContainer);
   }
