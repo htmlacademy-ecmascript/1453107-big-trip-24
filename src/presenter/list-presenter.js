@@ -1,6 +1,7 @@
-import { SortType, UpdateType, UserAction } from '../const.js';
+import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
 import { sortTripPointsByDay, sortTripPointsByTime, sortTripPointsByPrice } from '../utils/point.js';
 import { render, RenderPosition, remove } from '../framework/render.js';
+import { filter } from '../utils/filter.js';
 
 import TripPointPresenter from './trip-point-presenter.js';
 
@@ -15,35 +16,44 @@ export default class ListPresenter {
   #tripPointsModel = null;
   #destinationsModel = null;
   #offersModel = null;
+  #filterModel = null;
 
   #listComponent = new ListView();
-  #noTripPointsComponent = new NoTripPointsView();
+  #noTripPointsComponent = null;
   #sortComponent = null;
 
   #currentSortType = SortType.DAY;
   #tripPointsPresenter = new Map();
 
+  #filterType = FilterType.EVERYTHING;
 
-  constructor({ listContainer, tripPointsModel, destinationsModel, offersModel }) {
+
+  constructor({ listContainer, tripPointsModel, destinationsModel, offersModel, filterModel }) {
     this.#listContainer = listContainer;
     this.#tripPointsModel = tripPointsModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
+    this.#filterModel = filterModel;
 
     this.#tripPointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get tripPoints() {
+    this.#filterType = this.#filterModel.filter;
+    const tripPoints = this.#tripPointsModel.tripPoints;
+    const filteredTripPoints = filter[this.#filterType](tripPoints);
+
     switch (this.#currentSortType) {
       case SortType.DAY:
-        return [...this.#tripPointsModel.tripPoints].sort(sortTripPointsByDay);
+        return filteredTripPoints.sort(sortTripPointsByDay);
       case SortType.TIME:
-        return [...this.#tripPointsModel.tripPoints].sort(sortTripPointsByTime);
+        return filteredTripPoints.sort(sortTripPointsByTime);
       case SortType.PRICE:
-        return [...this.#tripPointsModel.tripPoints].sort(sortTripPointsByPrice);
+        return filteredTripPoints.sort(sortTripPointsByPrice);
     }
 
-    return this.#tripPointsModel.tripPoint;
+    return filteredTripPoints;
   }
 
   init() {
@@ -55,6 +65,10 @@ export default class ListPresenter {
   }
 
   #renderNoTripPoints() {
+    this.#noTripPointsComponent = new NoTripPointsView({
+      filterType: this.#filterType,
+    })
+
     render(this.#noTripPointsComponent, this.#listContainer);
   }
 
@@ -150,8 +164,10 @@ export default class ListPresenter {
     this.#tripPointsPresenter.clear();
 
     remove(this.#sortComponent);
-    remove(this.#noTripPointsComponent);
-    remove(this.#sortComponent);
+
+    if (this.#noTripPointsComponent) {
+      remove(this.#noTripPointsComponent);
+    }
 
     if (resetSortType) {
       this.#currentSortType = SortType.DAY;
