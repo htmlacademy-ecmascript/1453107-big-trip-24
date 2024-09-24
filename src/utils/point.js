@@ -4,6 +4,9 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 
 
+const DAY_IN_MINUTES = 1440;
+const HOUR_IN_MINUTES = 60;
+
 const FORMATS = {
   'date': 'MMM D',
   'time': 'HH:mm',
@@ -11,9 +14,10 @@ const FORMATS = {
   'eventTime': 'DD/MM/YY HH:mm',
 };
 
+
 function convertLocalToUtc(localDate) {
   const date = new Date(localDate);
-  const timezoneOffset = new Date().getTimezoneOffset() / 60;
+  const timezoneOffset = new Date().getTimezoneOffset() / HOUR_IN_MINUTES;
   const changedDate = date.setHours(date.getHours() - timezoneOffset);
   return new Date(changedDate).toUTCString();
 }
@@ -31,16 +35,16 @@ function getDuration(date1, date2) {
   let hoursDuration = '';
   let minutesDuration = '';
 
-  if (minutesLeft >= 1440) {
-    const days = Math.floor(minutesLeft / 1440);
+  if (minutesLeft >= DAY_IN_MINUTES) {
+    const days = Math.floor(minutesLeft / DAY_IN_MINUTES);
     dayDuration = days;
-    minutesLeft = minutesLeft - days * 1440;
+    minutesLeft = minutesLeft - days * DAY_IN_MINUTES;
   }
 
-  if (minutesLeft >= 60) {
-    const hours = Math.floor(minutesLeft / 60);
+  if (minutesLeft >= HOUR_IN_MINUTES) {
+    const hours = Math.floor(minutesLeft / HOUR_IN_MINUTES);
     hoursDuration = hours;
-    minutesLeft = minutesLeft - hours * 60;
+    minutesLeft = minutesLeft - hours * HOUR_IN_MINUTES;
   }
 
   minutesDuration = minutesLeft;

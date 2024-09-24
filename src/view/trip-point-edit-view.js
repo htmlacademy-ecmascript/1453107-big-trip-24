@@ -1,5 +1,4 @@
 import flatpickr from 'flatpickr';
-import 'flatpickr/dist/flatpickr.min.css';
 
 import { EVENT_TYPES } from '../const.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
@@ -128,10 +127,10 @@ function createTripPointEditTemplate(tripPoint, destinationNames) {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${timeStart}">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" data-date="date_from" value="${timeStart}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${timeEnd}">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" data-date="date_to" value="${timeEnd}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -328,7 +327,8 @@ export default class TripPointEditView extends AbstractStatefulView {
         time_24hr: true,
         dateFormat: 'd/m/y H:i',
         defaultDate: humanizeDate(this._state.date_from, 'eventTime'),
-        onClose: this.#dateFromChangeHandler,
+        maxDate: humanizeDate(this._state.date_to, 'eventTime'),
+        onClose: this.#dateChangeHandler,
       }
     );
 
@@ -339,20 +339,15 @@ export default class TripPointEditView extends AbstractStatefulView {
         time_24hr: true,
         dateFormat: 'd/m/y H:i',
         defaultDate: humanizeDate(this._state.date_to, 'eventTime'),
-        onClose: this.#dateToChangeHandler,
+        minDate: humanizeDate(this._state.date_from, 'eventTime'),
+        onClose: this.#dateChangeHandler,
       }
     );
   }
 
-  #dateFromChangeHandler = ([userDate]) => {
+  #dateChangeHandler = ([userDate], date, config) => {
     this.updateElement({
-      date_from: convertLocalToUtc(userDate)
-    });
-  };
-
-  #dateToChangeHandler = ([userDate]) => {
-    this.updateElement({
-      date_to: convertLocalToUtc(userDate)
+      [config.element.dataset.date]: convertLocalToUtc(userDate)
     });
   };
 

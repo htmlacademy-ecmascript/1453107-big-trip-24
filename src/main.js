@@ -1,3 +1,5 @@
+import 'flatpickr/dist/flatpickr.min.css';
+
 import { render } from './framework/render.js';
 
 import { MOCK_TRIP_POINTS } from './mock/trip-points.js';
