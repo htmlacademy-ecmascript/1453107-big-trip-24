@@ -1,4 +1,5 @@
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 import { EVENT_TYPES } from '../const.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
@@ -115,7 +116,7 @@ function createTripPointEditTemplate(tripPoint, destinationNames) {
               id="event-destination-1"
               type="text"
               name="event-destination"
-              value="${destination ? destination.name : ''}"
+              value="${destination ? he.encode(destination.name) : ''}"
               list="destination-list-1"
             >
             <datalist id="destination-list-1">
@@ -252,8 +253,14 @@ export default class TripPointEditView extends AbstractStatefulView {
   #priceChangeHandler = (evt) => {
     evt.preventDefault();
 
+    const price = Number(evt.target.value);
+
+    if (!price) {
+      return;
+    }
+
     this.updateElement({
-      base_price: Number(evt.target.value),
+      base_price: price,
     });
   };
 
@@ -301,6 +308,10 @@ export default class TripPointEditView extends AbstractStatefulView {
     evt.preventDefault();
 
     const destinationValue = evt.target.value;
+
+    if (!this.#destinationsModel.getDestinationNames().includes(destinationValue)) {
+      return;
+    }
 
     this._setState({
       destination: destinationValue,
@@ -365,6 +376,10 @@ export default class TripPointEditView extends AbstractStatefulView {
   }
 
   #dateChangeHandler = ([userDate], date, config) => {
+    if (!date) {
+      return;
+    }
+
     this.updateElement({
       [config.element.dataset.date]: convertLocalToUtc(userDate)
     });
