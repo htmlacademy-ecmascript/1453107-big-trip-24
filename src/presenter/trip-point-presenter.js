@@ -1,3 +1,4 @@
+import { UserAction, UpdateType } from '../const.js';
 import { render, replace, remove } from '../framework/render.js';
 import TripPointView from '../view/trip-point-view.js';
 import TripPointEditView from '../view/trip-point-edit-view.js';
@@ -52,6 +53,7 @@ export default class TripPointPresenter {
       offersModel: this.#offersModel,
       onFormSubmit: this.#handleFormSubmit,
       onCloseFormClick: this.#handleFormCloseClick,
+      onDeleteClick: this.#handleDeleteClick,
     });
 
     if (prevTripPointComponent === null || prevTripPointEditComponent === null) {
@@ -108,16 +110,37 @@ export default class TripPointPresenter {
     this.#replaceCardToForm();
   };
 
-  #handleFormSubmit = (tripPoint) => {
-    this.#handleDataChange(tripPoint);
+  #handleFormCloseClick = () => {
     this.#replaceFormToCard();
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#tripPoint, is_favorite: !this.#tripPoint.is_favorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...this.#tripPoint, is_favorite: !this.#tripPoint.is_favorite}
+    );
   };
 
-  #handleFormCloseClick = () => {
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate =
+      this.#tripPoint.date_from !== update.date_from ||
+      this.#tripPoint.date_to !== update.date_to ||
+      this.#tripPoint.base_price !== update.base_price;
+
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
     this.#replaceFormToCard();
+  };
+
+  #handleDeleteClick = (tripPoint) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      tripPoint
+    );
   };
 }

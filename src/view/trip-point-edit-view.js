@@ -162,6 +162,7 @@ function createTripPointEditTemplate(tripPoint, destinationNames) {
 export default class TripPointEditView extends AbstractStatefulView {
 
   #handleFormSubmit = null;
+  #handleDeleteClick = null;
   #handleCloseFormClick = null;
 
   #destinationsModel = null;
@@ -175,10 +176,11 @@ export default class TripPointEditView extends AbstractStatefulView {
   #datepickerDateFrom = null;
   #datepickerDateTo = null;
 
-  constructor({ tripPoint, destinationsModel, offersModel, onFormSubmit, onCloseFormClick }) {
+  constructor({ tripPoint, destinationsModel, offersModel, onFormSubmit, onCloseFormClick, onDeleteClick }) {
 
     super();
     this.#handleFormSubmit = onFormSubmit;
+    this.#handleDeleteClick = onDeleteClick;
     this.#handleCloseFormClick = onCloseFormClick;
 
     this.#destinationsModel = destinationsModel;
@@ -240,6 +242,9 @@ export default class TripPointEditView extends AbstractStatefulView {
 
     this.element.querySelector('.event__input.event__input--price')
       .addEventListener('change', this.#priceChangeHandler);
+
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#formDeleteClickHandler);
 
     this.#setDatepicker();
   }
@@ -317,6 +322,11 @@ export default class TripPointEditView extends AbstractStatefulView {
   #closeFormClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleCloseFormClick();
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(TripPointEditView.parseStateToTripPoint(this._state));
   };
 
   #setDatepicker() {

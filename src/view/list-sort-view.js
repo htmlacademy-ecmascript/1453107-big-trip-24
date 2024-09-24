@@ -28,13 +28,13 @@ function createListSortTemplate(currentSortType) {
 
 export default class ListSortView extends AbstractView {
 
-  #handleSortTypeChange = null;
   #currentSortType = null;
+  #handleSortTypeChange = null;
 
-  constructor({ onSortTypeChange, currentSortType }) {
+  constructor({ currentSortType, onSortTypeChange }) {
     super();
-    this.#handleSortTypeChange = onSortTypeChange;
     this.#currentSortType = currentSortType;
+    this.#handleSortTypeChange = onSortTypeChange;
 
     this.element.addEventListener('change', this.#sortTypeChangeHandler);
   }
