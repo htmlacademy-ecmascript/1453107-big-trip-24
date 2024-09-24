@@ -1,5 +1,7 @@
 import 'flatpickr/dist/flatpickr.min.css';
 
+import { render } from './framework/render.js';
+
 import { MOCK_TRIP_POINTS } from './mock/trip-points.js';
 import { MOCK_DESTINATIONS } from './mock/destinations.js';
 import { MOCK_OFFERS } from './mock/offers.js';
@@ -12,6 +14,9 @@ import TripPointsModel from './model/trip-points-model.js';
 import DestinationsModel from './model/destinations-model.js';
 import OffersModel from './model/offers-model.js';
 import FilterModel from './model/filter-model.js';
+
+import NewTripPointButtonView from './view/new-trip-point-button-view.js';
+
 
 const headerElement = document.querySelector('.trip-main');
 const tripEventsElement = document.querySelector('.trip-events');
@@ -29,7 +34,8 @@ const listPresenter = new ListPresenter({
   tripPointsModel,
   destinationsModel,
   offersModel,
-  filterModel
+  filterModel,
+  onNewTripPointDestroy: handleNewTripPointFormClose
 });
 
 const filterPresenter = new FilterPresenter({
@@ -41,6 +47,21 @@ const filterPresenter = new FilterPresenter({
 const headerPresenter = new HeaderPresenter({
   headerContainer: headerElement,
 });
+
+const newTripPointButtonComponent = new NewTripPointButtonView({
+  onClick: handleNewTripPointButtonClick
+});
+
+function handleNewTripPointFormClose() {
+  newTripPointButtonComponent.element.disabled = false;
+}
+
+function handleNewTripPointButtonClick() {
+  listPresenter.createTripPoint();
+  newTripPointButtonComponent.element.disabled = true;
+}
+
+render(newTripPointButtonComponent, headerElement);
 
 headerPresenter.init();
 filterPresenter.init();

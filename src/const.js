@@ -1,7 +1,6 @@
 const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
 const BLANK_TRIP_POINT = {
-  'id': '000',
   'base_price': 0,
   'date_from': '',
   'date_to': '',

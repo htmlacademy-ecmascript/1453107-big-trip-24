@@ -4,6 +4,7 @@ import { render, RenderPosition, remove } from '../framework/render.js';
 import { filter } from '../utils/filter.js';
 
 import TripPointPresenter from './trip-point-presenter.js';
+import NewTripPointPresenter from './new-trip-point-presenter.js';
 
 import ListView from '../view/list-view.js';
 import ListSortView from '../view/list-sort-view.js';
@@ -13,6 +14,10 @@ import NoTripPointsView from '../view/no-trip-points-vew.js';
 export default class ListPresenter {
 
   #listContainer = null;
+
+  #tripPointsPresenter = new Map();
+  #newTripPointPresenter = null;
+
   #tripPointsModel = null;
   #destinationsModel = null;
   #offersModel = null;
@@ -23,17 +28,24 @@ export default class ListPresenter {
   #sortComponent = null;
 
   #currentSortType = SortType.DAY;
-  #tripPointsPresenter = new Map();
-
   #filterType = FilterType.EVERYTHING;
 
 
-  constructor({ listContainer, tripPointsModel, destinationsModel, offersModel, filterModel }) {
+  constructor({ listContainer, tripPointsModel, destinationsModel, offersModel, filterModel, onNewTripPointDestroy }) {
     this.#listContainer = listContainer;
+
     this.#tripPointsModel = tripPointsModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#filterModel = filterModel;
+
+    this.#newTripPointPresenter = new NewTripPointPresenter({
+      tripPointListContainer: this.#listComponent.element,
+      onDataChange: this.#handleViewAction,
+      onDestroy: onNewTripPointDestroy,
+      destinationsModel: this.#destinationsModel,
+      offersModel: this.#offersModel,
+    });
 
     this.#tripPointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -58,6 +70,12 @@ export default class ListPresenter {
 
   init() {
     this.#renderList();
+  }
+
+  createTripPoint() {
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newTripPointPresenter.init();
   }
 
   #renderTripPoints(tripPoints) {
@@ -101,6 +119,7 @@ export default class ListPresenter {
   };
 
   #handleModeChange = () => {
+    this.#newTripPointPresenter.destroy();
     this.#tripPointsPresenter.forEach((presenter) => presenter.resetView());
   };
 
@@ -160,6 +179,7 @@ export default class ListPresenter {
   #clearList({ resetRenderedTripPointsCount = false, resetSortType = false } = {}) {
     const tripPointCount = this.tripPoints.length;
 
+    this.#newTripPointPresenter.destroy();
     this.#tripPointsPresenter.forEach((presenter) => presenter.destroy());
     this.#tripPointsPresenter.clear();
 
@@ -173,6 +193,4 @@ export default class ListPresenter {
       this.#currentSortType = SortType.DAY;
     }
   }
-
-
 }

@@ -1,14 +1,11 @@
 import { render, RenderPosition } from '../framework/render.js';
-
 import HeaderView from '../view/header-view.js';
-import NewTripPointButtonView from '../view/new-trip-point-button-view.js';
 
 
 export default class HeaderPresenter {
 
   #headerComponent = null;
   #headerContainer = null;
-  #newTripPointButtonView = null;
 
   constructor({ headerContainer }) {
     this.#headerContainer = headerContainer;
@@ -16,7 +13,6 @@ export default class HeaderPresenter {
 
   init() {
     this.#renderHeader();
-    this.#renderButton();
   }
 
   #renderHeader() {
@@ -26,14 +22,5 @@ export default class HeaderPresenter {
     });
 
     render(this.#headerComponent, this.#headerContainer, RenderPosition.AFTERBEGIN);
-  }
-
-  #renderButton() {
-
-    this.#newTripPointButtonView = new NewTripPointButtonView({
-
-    });
-
-    render(this.#newTripPointButtonView, this.#headerContainer);
   }
 }

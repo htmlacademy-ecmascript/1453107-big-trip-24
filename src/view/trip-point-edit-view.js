@@ -314,8 +314,17 @@ export default class TripPointEditView extends AbstractStatefulView {
     }
   };
 
+  #hasEmptyFormFields() {
+    return !this._state.date_from || !this._state.date_to || !this._state.destination || !this._state.base_price;
+  }
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+
+    if (this.#hasEmptyFormFields()) {
+      return;
+    }
+
     this.#handleFormSubmit(TripPointEditView.parseStateToTripPoint(this._state));
   };
 
