@@ -12,6 +12,7 @@ const FORMATS = {
   'time': 'HH:mm',
   'datetime': 'YYYY-MM-DD',
   'eventTime': 'DD/MM/YY HH:mm',
+  'headerDate': 'D MMM'
 };
 
 

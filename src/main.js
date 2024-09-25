@@ -46,6 +46,9 @@ const filterPresenter = new FilterPresenter({
 
 const headerPresenter = new HeaderPresenter({
   headerContainer: headerElement,
+  tripPointsModel,
+  destinationsModel,
+  filterModel,
 });
 
 const newTripPointButtonComponent = new NewTripPointButtonView({
