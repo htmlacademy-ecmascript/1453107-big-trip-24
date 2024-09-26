@@ -1,7 +1,6 @@
 const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
 const BLANK_TRIP_POINT = {
-  'id': '000',
   'base_price': 0,
   'date_from': '',
   'date_to': '',
@@ -33,6 +32,18 @@ const SortType = {
 
 const DisabledSortType = [SortType.EVENT, SortType.OFFERS];
 
+const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
 
 export {
   EVENT_TYPES,
@@ -41,4 +52,6 @@ export {
   FilterType,
   SortType,
   DisabledSortType,
+  UserAction,
+  UpdateType
 };

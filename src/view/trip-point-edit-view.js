@@ -1,5 +1,5 @@
 import flatpickr from 'flatpickr';
-import 'flatpickr/dist/flatpickr.min.css';
+import he from 'he';
 
 import { EVENT_TYPES } from '../const.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
@@ -116,7 +116,7 @@ function createTripPointEditTemplate(tripPoint, destinationNames) {
               id="event-destination-1"
               type="text"
               name="event-destination"
-              value="${destination ? destination.name : ''}"
+              value="${destination ? he.encode(destination.name) : ''}"
               list="destination-list-1"
             >
             <datalist id="destination-list-1">
@@ -128,10 +128,10 @@ function createTripPointEditTemplate(tripPoint, destinationNames) {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${timeStart}">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" data-date="date_from" value="${timeStart}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${timeEnd}">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" data-date="date_to" value="${timeEnd}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -163,6 +163,7 @@ function createTripPointEditTemplate(tripPoint, destinationNames) {
 export default class TripPointEditView extends AbstractStatefulView {
 
   #handleFormSubmit = null;
+  #handleDeleteClick = null;
   #handleCloseFormClick = null;
 
   #destinationsModel = null;
@@ -176,10 +177,11 @@ export default class TripPointEditView extends AbstractStatefulView {
   #datepickerDateFrom = null;
   #datepickerDateTo = null;
 
-  constructor({ tripPoint, destinationsModel, offersModel, onFormSubmit, onCloseFormClick }) {
+  constructor({ tripPoint, destinationsModel, offersModel, onFormSubmit, onCloseFormClick, onDeleteClick }) {
 
     super();
     this.#handleFormSubmit = onFormSubmit;
+    this.#handleDeleteClick = onDeleteClick;
     this.#handleCloseFormClick = onCloseFormClick;
 
     this.#destinationsModel = destinationsModel;
@@ -242,14 +244,23 @@ export default class TripPointEditView extends AbstractStatefulView {
     this.element.querySelector('.event__input.event__input--price')
       .addEventListener('change', this.#priceChangeHandler);
 
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#formDeleteClickHandler);
+
     this.#setDatepicker();
   }
 
   #priceChangeHandler = (evt) => {
     evt.preventDefault();
 
+    const price = Number(evt.target.value);
+
+    if (!price) {
+      return;
+    }
+
     this.updateElement({
-      base_price: Number(evt.target.value),
+      base_price: price,
     });
   };
 
@@ -298,6 +309,10 @@ export default class TripPointEditView extends AbstractStatefulView {
 
     const destinationValue = evt.target.value;
 
+    if (!this.#destinationsModel.getDestinationNames().includes(destinationValue)) {
+      return;
+    }
+
     this._setState({
       destination: destinationValue,
     });
@@ -310,14 +325,28 @@ export default class TripPointEditView extends AbstractStatefulView {
     }
   };
 
+  #hasEmptyFormFields() {
+    return !this._state.date_from || !this._state.date_to || !this._state.destination || !this._state.base_price;
+  }
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+
+    if (this.#hasEmptyFormFields()) {
+      return;
+    }
+
     this.#handleFormSubmit(TripPointEditView.parseStateToTripPoint(this._state));
   };
 
   #closeFormClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleCloseFormClick();
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(TripPointEditView.parseStateToTripPoint(this._state));
   };
 
   #setDatepicker() {
@@ -328,7 +357,8 @@ export default class TripPointEditView extends AbstractStatefulView {
         time_24hr: true,
         dateFormat: 'd/m/y H:i',
         defaultDate: humanizeDate(this._state.date_from, 'eventTime'),
-        onClose: this.#dateFromChangeHandler,
+        maxDate: humanizeDate(this._state.date_to, 'eventTime'),
+        onClose: this.#dateChangeHandler,
       }
     );
 
@@ -339,20 +369,19 @@ export default class TripPointEditView extends AbstractStatefulView {
         time_24hr: true,
         dateFormat: 'd/m/y H:i',
         defaultDate: humanizeDate(this._state.date_to, 'eventTime'),
-        onClose: this.#dateToChangeHandler,
+        minDate: humanizeDate(this._state.date_from, 'eventTime'),
+        onClose: this.#dateChangeHandler,
       }
     );
   }
 
-  #dateFromChangeHandler = ([userDate]) => {
-    this.updateElement({
-      date_from: convertLocalToUtc(userDate)
-    });
-  };
+  #dateChangeHandler = ([userDate], date, config) => {
+    if (!date) {
+      return;
+    }
 
-  #dateToChangeHandler = ([userDate]) => {
     this.updateElement({
-      date_to: convertLocalToUtc(userDate)
+      [config.element.dataset.date]: convertLocalToUtc(userDate)
     });
   };
 
