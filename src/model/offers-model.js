@@ -1,13 +1,27 @@
 export default class OffersModel {
 
-  #data = null;
+  #offers = [];
+  #offersApiService = null;
 
-  constructor(data) {
-    this.#data = data;
+  constructor({ offersApiService }) {
+    this.#offersApiService = offersApiService;
+  }
+
+  get offers() {
+    return this.#offers;
+  }
+
+  async init() {
+    try {
+      this.#offers = await this.#offersApiService.offers;
+    } catch (error) {
+      // this.#offers = [];
+      throw new Error('offers!');
+    }
   }
 
   getOffersByType(type) {
-    return this.#data
+    return this.#offers
       .filter((offersItem) => offersItem.type === type)[0]
       .offers;
   }
@@ -17,7 +31,4 @@ export default class OffersModel {
       .filter((offersItem) => offers.includes(offersItem.id));
   }
 
-  get offers() {
-    return this.#data;
-  }
 }

@@ -86,7 +86,7 @@ function createEventTypeList({ activeType }) {
 
 function createTripPointEditTemplate(tripPoint, destinationNames) {
 
-  const { type, date_from: dateFrom, date_to: dateTo, base_price: price, destination, offers, allOffers } = tripPoint;
+  const { type, dateFrom, dateTo, basePrice, destination, offers, allOffers } = tripPoint;
 
   const timeStart = humanizeDate(dateFrom, 'eventTime');
   const timeEnd = humanizeDate(dateTo, 'eventTime');
@@ -128,10 +128,10 @@ function createTripPointEditTemplate(tripPoint, destinationNames) {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" data-date="date_from" value="${timeStart}">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" data-date="dateFrom" value="${timeStart}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" data-date="date_to" value="${timeEnd}">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" data-date="dateTo" value="${timeEnd}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -139,7 +139,7 @@ function createTripPointEditTemplate(tripPoint, destinationNames) {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -242,7 +242,7 @@ export default class TripPointEditView extends AbstractStatefulView {
       .addEventListener('input', this.#destinationInputHandler);
 
     this.element.querySelector('.event__input.event__input--price')
-      .addEventListener('change', this.#priceChangeHandler);
+      .addEventListener('blur', this.#priceChangeHandler);
 
     this.element.querySelector('.event__reset-btn')
       .addEventListener('click', this.#formDeleteClickHandler);
@@ -260,7 +260,7 @@ export default class TripPointEditView extends AbstractStatefulView {
     }
 
     this.updateElement({
-      base_price: price,
+      basePrice: price,
     });
   };
 
@@ -326,7 +326,7 @@ export default class TripPointEditView extends AbstractStatefulView {
   };
 
   #hasEmptyFormFields() {
-    return !this._state.date_from || !this._state.date_to || !this._state.destination || !this._state.base_price;
+    return !this._state.dateFrom || !this._state.dateTo || !this._state.destination || !this._state.basePrice;
   }
 
   #formSubmitHandler = (evt) => {
@@ -356,8 +356,8 @@ export default class TripPointEditView extends AbstractStatefulView {
         enableTime: true,
         time_24hr: true,
         dateFormat: 'd/m/y H:i',
-        defaultDate: humanizeDate(this._state.date_from, 'eventTime'),
-        maxDate: humanizeDate(this._state.date_to, 'eventTime'),
+        defaultDate: humanizeDate(this._state.dateFrom, 'eventTime'),
+        maxDate: humanizeDate(this._state.dateTo, 'eventTime'),
         onClose: this.#dateChangeHandler,
       }
     );
@@ -368,8 +368,8 @@ export default class TripPointEditView extends AbstractStatefulView {
         enableTime: true,
         time_24hr: true,
         dateFormat: 'd/m/y H:i',
-        defaultDate: humanizeDate(this._state.date_to, 'eventTime'),
-        minDate: humanizeDate(this._state.date_from, 'eventTime'),
+        defaultDate: humanizeDate(this._state.dateTo, 'eventTime'),
+        minDate: humanizeDate(this._state.dateFrom, 'eventTime'),
         onClose: this.#dateChangeHandler,
       }
     );
@@ -381,7 +381,7 @@ export default class TripPointEditView extends AbstractStatefulView {
     }
 
     this.updateElement({
-      [config.element.dataset.date]: convertLocalToUtc(userDate)
+      [config.element.dataset.date]: new Date(convertLocalToUtc(userDate))
     });
   };
 

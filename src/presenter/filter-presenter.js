@@ -7,7 +7,7 @@ import { FilterType, UpdateType } from '../const.js';
 export default class FilterPresenter {
 
   #filterContainer = null;
-  
+
   #filterModel = null;
   #tripPointsModel = null;
 

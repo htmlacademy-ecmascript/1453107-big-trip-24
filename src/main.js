@@ -1,10 +1,10 @@
 import 'flatpickr/dist/flatpickr.min.css';
 
-import { render } from './framework/render.js';
+import TripPointsApiService from './api/trip-points-api-service.js';
+import DestinationsApiService from './api/destinations-api-service.js';
+import OffersApiService from './api/offers-api-service.js';
 
-import { MOCK_TRIP_POINTS } from './mock/trip-points.js';
-import { MOCK_DESTINATIONS } from './mock/destinations.js';
-import { MOCK_OFFERS } from './mock/offers.js';
+import { render } from './framework/render.js';
 
 import HeaderPresenter from './presenter/header-presenter.js';
 import ListPresenter from './presenter/list-presenter.js';
@@ -17,14 +17,24 @@ import FilterModel from './model/filter-model.js';
 
 import NewTripPointButtonView from './view/new-trip-point-button-view.js';
 
+const AUTHORIZATION = 'Basic ls2itl0iot0acn2hd';
+const END_POINT = 'https://24.objects.htmlacademy.pro/big-trip';
+
 
 const headerElement = document.querySelector('.trip-main');
 const tripEventsElement = document.querySelector('.trip-events');
 const tripFiltersElement = document.querySelector('.trip-controls__filters');
 
-const tripPointsModel = new TripPointsModel(MOCK_TRIP_POINTS);
-const destinationsModel = new DestinationsModel(MOCK_DESTINATIONS);
-const offersModel = new OffersModel(MOCK_OFFERS);
+
+const tripPointsModel = new TripPointsModel({
+  tripPointsApiService: new TripPointsApiService(END_POINT, AUTHORIZATION)
+});
+const destinationsModel = new DestinationsModel({
+  destinationsApiService: new DestinationsApiService(END_POINT, AUTHORIZATION)
+});
+const offersModel = new OffersModel({
+  offersApiService: new OffersApiService(END_POINT, AUTHORIZATION)
+});
 
 const filterModel = new FilterModel();
 
@@ -66,6 +76,19 @@ function handleNewTripPointButtonClick() {
 
 render(newTripPointButtonComponent, headerElement);
 
-headerPresenter.init();
+async function loadData() {
+  try {
+    await destinationsModel.init();
+    await offersModel.init();
+    await tripPointsModel.init();
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+loadData();
+
+
 filterPresenter.init();
-listPresenter.init();
+
+headerPresenter.init();
