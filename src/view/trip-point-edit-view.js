@@ -354,7 +354,7 @@ export default class TripPointEditView extends AbstractStatefulView {
       this.element.querySelector('#event-start-time-1'),
       {
         enableTime: true,
-        time_24hr: true,
+        'time_24hr': true,
         dateFormat: 'd/m/y H:i',
         defaultDate: humanizeDate(this._state.dateFrom, 'eventTime'),
         maxDate: humanizeDate(this._state.dateTo, 'eventTime'),
@@ -366,7 +366,7 @@ export default class TripPointEditView extends AbstractStatefulView {
       this.element.querySelector('#event-end-time-1'),
       {
         enableTime: true,
-        time_24hr: true,
+        'time_24hr': true,
         dateFormat: 'd/m/y H:i',
         defaultDate: humanizeDate(this._state.dateTo, 'eventTime'),
         minDate: humanizeDate(this._state.dateFrom, 'eventTime'),

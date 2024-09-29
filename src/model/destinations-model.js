@@ -15,22 +15,26 @@ export default class DestinationsModel {
     try {
       this.#destinations = await this.#destinationsApiService.destinations;
     } catch (error) {
-      // this.#destinations = [];
       throw new Error('destinations!');
     }
   }
 
   getDestinationInfoById(destinationId) {
-    return this.#destinations
-      .filter((destinationItem) => destinationItem.id === destinationId)[0];
+    const destinationInfo = this.#destinations
+      .find((destinationItem) => destinationItem.id === destinationId);
+
+    return destinationInfo;
   }
 
   getDestinationInfoByName(destinationName) {
-    return this.#destinations
-      .filter((destinationItem) => destinationItem.name === destinationName)[0];
+    const destinationInfo = this.#destinations
+      .find((destinationItem) => destinationItem.name === destinationName);
+
+    return destinationInfo;
   }
 
   getDestinationNames() {
-    return this.#destinations.map((destination) => destination.name);
+    const destinationNames = this.#destinations.map((destination) => destination.name);
+    return destinationNames;
   }
 }

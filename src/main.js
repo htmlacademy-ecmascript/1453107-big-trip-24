@@ -76,19 +76,18 @@ function handleNewTripPointButtonClick() {
 
 render(newTripPointButtonComponent, headerElement);
 
-async function loadData() {
+(async () => {
   try {
+
     await destinationsModel.init();
     await offersModel.init();
     await tripPointsModel.init();
-  } catch (error) {
-    console.log(error)
-  }
-}
 
-loadData();
+  } catch (error) {
+    console.log(error);
+  }
+})();
 
 
 filterPresenter.init();
-
 headerPresenter.init();
