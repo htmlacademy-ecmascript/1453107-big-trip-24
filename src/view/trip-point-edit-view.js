@@ -84,7 +84,21 @@ function createEventTypeList({ activeType }) {
   `);
 }
 
-function createTripPointEditTemplate(tripPoint, destinationNames) {
+function addButtons(isNewPoint) {
+  return (`
+    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+
+    ${isNewPoint
+      ? '<button class="event__reset-btn" type="reset">Cancel</button>'
+      : `<button class="event__reset-btn" type="reset">Delete</button>
+         <button class="event__rollup-btn" type="button">
+            <span class="visually-hidden">Open event</span>
+        </button>`
+    }
+  `);
+}
+
+function createTripPointEditTemplate(tripPoint, destinationNames, isNewPoint) {
 
   const { type, dateFrom, dateTo, basePrice, destination, offers, allOffers } = tripPoint;
 
@@ -142,11 +156,8 @@ function createTripPointEditTemplate(tripPoint, destinationNames) {
             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
-            <span class="visually-hidden">Open event</span>
-          </button>
+          ${addButtons(isNewPoint)}
+
         </header>
         <section class="event__details">
 
@@ -177,7 +188,9 @@ export default class TripPointEditView extends AbstractStatefulView {
   #datepickerDateFrom = null;
   #datepickerDateTo = null;
 
-  constructor({ tripPoint, destinationsModel, offersModel, onFormSubmit, onCloseFormClick, onDeleteClick }) {
+  #isNewPoint = false;
+
+  constructor({ tripPoint, destinationsModel, offersModel, onFormSubmit, onCloseFormClick, onDeleteClick, isNewPoint }) {
 
     super();
     this.#handleFormSubmit = onFormSubmit;
@@ -192,13 +205,15 @@ export default class TripPointEditView extends AbstractStatefulView {
     this.#allOffers = this.#offersModel.getOffersByType(tripPoint.type);
     this.#destinationNames = this.#destinationsModel.getDestinationNames();
 
+    this.#isNewPoint = isNewPoint;
+
     this._setState(TripPointEditView.parseTripPointToState(tripPoint, this.#destination, this.#offers, this.#allOffers));
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createTripPointEditTemplate(this._state, this.#destinationNames);
+    return createTripPointEditTemplate(this._state, this.#destinationNames, this.#isNewPoint);
   }
 
   removeElement() {
@@ -229,9 +244,6 @@ export default class TripPointEditView extends AbstractStatefulView {
     this.element.querySelector('.event.event--edit')
       .addEventListener('submit', this.#formSubmitHandler);
 
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#closeFormClickHandler);
-
     this.element.querySelector('.event.event--edit')
       .addEventListener('change', this.#typeToggleHandler);
 
@@ -244,8 +256,17 @@ export default class TripPointEditView extends AbstractStatefulView {
     this.element.querySelector('.event__input.event__input--price')
       .addEventListener('blur', this.#priceChangeHandler);
 
-    this.element.querySelector('.event__reset-btn')
-      .addEventListener('click', this.#formDeleteClickHandler);
+    const resetButton = this.element.querySelector('.event__reset-btn');
+
+    if (this.#isNewPoint) {
+      resetButton.addEventListener('click', this.#closeFormClickHandler);
+
+    } else {
+      resetButton.addEventListener('click', this.#formDeleteClickHandler);
+
+      this.element.querySelector('.event__rollup-btn')
+        .addEventListener('click', this.#closeFormClickHandler);
+    }
 
     this.#setDatepicker();
   }

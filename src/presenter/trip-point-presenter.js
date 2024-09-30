@@ -54,6 +54,7 @@ export default class TripPointPresenter {
       onFormSubmit: this.#handleFormSubmit,
       onCloseFormClick: this.#handleFormCloseClick,
       onDeleteClick: this.#handleDeleteClick,
+      isNewPoint: false,
     });
 
     if (prevTripPointComponent === null || prevTripPointEditComponent === null) {

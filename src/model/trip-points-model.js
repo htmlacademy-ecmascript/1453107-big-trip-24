@@ -20,7 +20,7 @@ export default class TripPointsModel extends Observable {
       const tripPoints = await this.#tripPointsApiService.tripPoints;
       this.#tripPoints = tripPoints.map(this.#adaptToClient);
     } catch (error) {
-      throw new Error('offers!');
+      throw new Error('tripPoints!');
     }
 
     this._notify(UpdateType.INIT);
@@ -50,28 +50,42 @@ export default class TripPointsModel extends Observable {
 
   }
 
-  addTripPoint(updateType, update) {
-    this.#tripPoints = [
-      update,
-      ...this.#tripPoints,
-    ];
+  async addTripPoint(updateType, update) {
 
-    this._notify(updateType, update);
+    try {
+      const response = await this.#tripPointsApiService.addTripPoint(update);
+      const newTripPoint = this.#adaptToClient(response);
+
+      this.#tripPoints = [
+        newTripPoint,
+        ...this.#tripPoints,
+      ];
+
+      this._notify(updateType, newTripPoint);
+    } catch (error) {
+      throw new Error('Can\'t add');
+    }
   }
 
-  deleteTripPoint(updateType, update) {
+  async deleteTripPoint(updateType, update) {
     const index = this.#tripPoints.findIndex((tripPoint) => tripPoint.id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t delete');
     }
 
-    this.#tripPoints = [
-      ...this.#tripPoints.slice(0, index),
-      ...this.#tripPoints.slice(index + 1),
-    ];
+    try {
+      await this.#tripPointsApiService.deleteTripPoint(update);
 
-    this._notify(updateType);
+      this.#tripPoints = [
+        ...this.#tripPoints.slice(0, index),
+        ...this.#tripPoints.slice(index + 1),
+      ];
+
+      this._notify(updateType);
+    } catch (error) {
+      throw new Error('Can\'t delete');
+    }
   }
 
   #adaptToClient (tripPoint) {

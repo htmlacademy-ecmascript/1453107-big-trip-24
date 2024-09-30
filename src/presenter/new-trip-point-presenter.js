@@ -1,5 +1,3 @@
-import { nanoid } from 'nanoid';
-
 import { render, remove, RenderPosition } from '../framework/render.js';
 import { UserAction, UpdateType, BLANK_TRIP_POINT } from '../const.js';
 import TripPointEditView from '../view/trip-point-edit-view.js';
@@ -34,7 +32,9 @@ export default class NewTripPointPresenter {
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
       onFormSubmit: this.#handleFormSubmit,
-      onDeleteClick: this.#handleDeleteClick
+      onCloseFormClick: this.#handleFormCloseClick,
+      onDeleteClick: this.#handleDeleteClick,
+      isNewPoint: true,
     });
 
     render(this.#tripPointEditComponent, this.#tripPointListContainer, RenderPosition.AFTERBEGIN);
@@ -59,7 +59,7 @@ export default class NewTripPointPresenter {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {id: nanoid(), ...tripPoint}
+      tripPoint
     );
 
     this.destroy();
@@ -74,5 +74,9 @@ export default class NewTripPointPresenter {
       evt.preventDefault();
       this.destroy();
     }
+  };
+
+  #handleFormCloseClick = () => {
+    this.destroy();
   };
 }
