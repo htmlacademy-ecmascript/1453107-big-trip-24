@@ -8,7 +8,7 @@ import { humanizeDate, convertLocalToUtc } from '../utils/point.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 
-function createOffersSectionTemplate(selectedOffers, allOffers) {
+function createOffersSectionTemplate(selectedOffers, allOffers, isDisabled) {
 
   return (`
     <section class="event__section  event__section--offers">
@@ -17,7 +17,15 @@ function createOffersSectionTemplate(selectedOffers, allOffers) {
 
         ${allOffers.map((offer) => (`
           <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="${offer.title}" ${selectedOffers.includes(offer) && 'checked'}>
+            <input
+              class="event__offer-checkbox
+              visually-hidden"
+              id="${offer.id}"
+              type="checkbox"
+              name="${offer.title}"
+              ${selectedOffers.includes(offer) && 'checked'}
+              ${isDisabled ? 'disabled' : ''}
+            >
             <label class="event__offer-label" for="${offer.id}">
               <span class="event__offer-title">${offer.title}</span>
               &plus;&euro;&nbsp;
@@ -58,7 +66,7 @@ function createDestinationSectionTemplate({ description, pictures }) {
   `);
 }
 
-function createEventTypeList({ activeType }) {
+function createEventTypeList({ activeType, isDisabled }) {
 
   return (`
     <div class="event__type-list">
@@ -68,13 +76,15 @@ function createEventTypeList({ activeType }) {
         ${EVENT_TYPES.map((type) => (`
           <div class="event__type-item">
             <input
-            id="event-type-${type}-1"
-            class="event__type-input
-            visually-hidden"
-            type="radio"
-            name="event-type"
-            value="${type}"
-            ${type === activeType ? 'checked' : ''}>
+              id="event-type-${type}-1"
+              class="event__type-input
+              visually-hidden"
+              type="radio"
+              name="event-type"
+              value="${type}"
+              ${type === activeType ? 'checked' : ''}
+              ${isDisabled ? 'disabled' : ''}
+            >
             <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizeFirstLetter(type)}</label>
           </div>
           `)).join('')}
@@ -84,14 +94,36 @@ function createEventTypeList({ activeType }) {
   `);
 }
 
-function addButtons(isNewPoint) {
+function addButtons(isNewPoint, isDisabled, isSaving, isDeleting) {
   return (`
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+    <button
+      class="event__save-btn  btn  btn--blue"
+      type="submit"
+      ${isDisabled ? 'disabled' : ''}
+    >
+      ${isSaving ? 'Saving...' : 'Save'}
+    </button>
 
     ${isNewPoint
-      ? '<button class="event__reset-btn" type="reset">Cancel</button>'
-      : `<button class="event__reset-btn" type="reset">Delete</button>
-         <button class="event__rollup-btn" type="button">
+      ? `<button
+        class="event__reset-btn"
+        type="reset"
+        ${isDisabled ? 'disabled' : ''}
+      >
+      Cancel
+      </button>`
+      : `<button
+          class="event__reset-btn"
+          type="reset"
+          ${isDisabled ? 'disabled' : ''}
+        >
+          ${isDeleting ? 'Deleting...' : 'Delete'}
+        </button>
+        <button
+          class="event__rollup-btn"
+          type="button"
+          ${isDisabled ? 'disabled' : ''}
+        >
             <span class="visually-hidden">Open event</span>
         </button>`
     }
@@ -100,7 +132,18 @@ function addButtons(isNewPoint) {
 
 function createTripPointEditTemplate(tripPoint, destinationNames, isNewPoint) {
 
-  const { type, dateFrom, dateTo, basePrice, destination, offers, allOffers } = tripPoint;
+  const {
+    type,
+    dateFrom,
+    dateTo,
+    basePrice,
+    destination,
+    offers,
+    allOffers,
+    isDisabled,
+    isSaving,
+    isDeleting,
+  } = tripPoint;
 
   const timeStart = humanizeDate(dateFrom, 'eventTime');
   const timeEnd = humanizeDate(dateTo, 'eventTime');
@@ -114,9 +157,9 @@ function createTripPointEditTemplate(tripPoint, destinationNames, isNewPoint) {
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
-            ${createEventTypeList({ activeType: type })}
+            ${createEventTypeList({ activeType: type, isDisabled })}
 
           </div>
 
@@ -132,6 +175,7 @@ function createTripPointEditTemplate(tripPoint, destinationNames, isNewPoint) {
               name="event-destination"
               value="${destination ? he.encode(destination.name) : ''}"
               list="destination-list-1"
+              ${isDisabled ? 'disabled' : ''}
             >
             <datalist id="destination-list-1">
               ${destinationNames.map((destinationName) => (`
@@ -142,10 +186,26 @@ function createTripPointEditTemplate(tripPoint, destinationNames, isNewPoint) {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" data-date="dateFrom" value="${timeStart}">
+            <input
+              class="event__input  event__input--time"
+              id="event-start-time-1"
+              type="text"
+              name="event-start-time"
+              data-date="dateFrom"
+              value="${timeStart}"
+              ${isDisabled ? 'disabled' : ''}
+            >
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" data-date="dateTo" value="${timeEnd}">
+            <input
+              class="event__input  event__input--time"
+              id="event-end-time-1"
+              type="text"
+              name="event-end-time"
+              data-date="dateTo"
+              value="${timeEnd}"
+              ${isDisabled ? 'disabled' : ''}
+            >
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -153,15 +213,22 @@ function createTripPointEditTemplate(tripPoint, destinationNames, isNewPoint) {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input
+              class="event__input  event__input--price"
+              id="event-price-1"
+              type="text"
+              name="event-price"
+              value="${basePrice}"
+              ${isDisabled ? 'disabled' : ''}
+            >
           </div>
 
-          ${addButtons(isNewPoint)}
+          ${addButtons(isNewPoint, isDisabled, isSaving, isDeleting)}
 
         </header>
         <section class="event__details">
 
-          ${allOffers.length > 0 ? createOffersSectionTemplate(offers, allOffers) : ''}
+          ${allOffers.length > 0 ? createOffersSectionTemplate(offers, allOffers, isDisabled) : ''}
 
           ${destination ? createDestinationSectionTemplate(destination) : ''}
 
@@ -412,6 +479,9 @@ export default class TripPointEditView extends AbstractStatefulView {
       destination,
       offers,
       allOffers,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
     };
   }
 
@@ -422,6 +492,10 @@ export default class TripPointEditView extends AbstractStatefulView {
     tripPoint.destination = tripPoint.destination.id;
 
     delete tripPoint.allOffers;
+
+    delete tripPoint.isDisabled;
+    delete tripPoint.isSaving;
+    delete tripPoint.isDeleting;
 
     return tripPoint;
   }

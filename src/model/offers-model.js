@@ -27,11 +27,22 @@ export default class OffersModel {
     return offers;
   }
 
-  getSelectedOffersByType(type, offers){
+  getSelectedOffersByType(type, offers) {
     const selectedOffers = this.getOffersByType(type)
       .filter((offersItem) => offers.includes(offersItem.id));
 
     return selectedOffers;
+  }
+
+  getTotalOffersPrice(type, offers) {
+    const selectedOffers = this.getSelectedOffersByType(type, offers);
+
+    const totalPrice = selectedOffers.reduce(
+      (accumulator, currentValue) => accumulator + currentValue.price,
+      0,
+    );
+
+    return totalPrice;
   }
 
 }

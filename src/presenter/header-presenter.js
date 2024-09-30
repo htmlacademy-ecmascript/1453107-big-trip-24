@@ -11,14 +11,16 @@ export default class HeaderPresenter {
   #headerContainer = null;
 
   #tripPointsModel = null;
+  #offersModel = null;
   #destinationsModel = null;
   #filterModel = null;
 
   #filteredTripPoints = [];
 
-  constructor({ headerContainer, tripPointsModel, destinationsModel, filterModel, }) {
+  constructor({ headerContainer, tripPointsModel, offersModel, destinationsModel, filterModel }) {
     this.#headerContainer = headerContainer;
     this.#tripPointsModel = tripPointsModel;
+    this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
     this.#filterModel = filterModel;
 
@@ -62,7 +64,13 @@ export default class HeaderPresenter {
 
   #getPrice() {
     const price = this.#filteredTripPoints.reduce(
-      (accumulator, currentValue) => accumulator + currentValue.basePrice,
+      (accumulator, currentValue) => {
+        const totalOffersPrice = this.#offersModel.getTotalOffersPrice(currentValue.type, currentValue.offers);
+        
+        accumulator = accumulator + currentValue.basePrice + totalOffersPrice;
+
+        return accumulator;
+      },
       0,
     );
     return price;
