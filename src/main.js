@@ -16,6 +16,7 @@ import OffersModel from './model/offers-model.js';
 import FilterModel from './model/filter-model.js';
 
 import NewTripPointButtonView from './view/new-trip-point-button-view.js';
+import FailedView from './view/failed-view.js';
 
 const AUTHORIZATION = 'Basic ls2itl0iot0acn2hd';
 const END_POINT = 'https://24.objects.htmlacademy.pro/big-trip';
@@ -57,6 +58,7 @@ const filterPresenter = new FilterPresenter({
 const headerPresenter = new HeaderPresenter({
   headerContainer: headerElement,
   tripPointsModel,
+  offersModel,
   destinationsModel,
   filterModel,
 });
@@ -78,13 +80,15 @@ render(newTripPointButtonComponent, headerElement);
 
 (async () => {
   try {
-
     await destinationsModel.init();
     await offersModel.init();
-    await tripPointsModel.init();
+    await tripPointsModel.init().finally(() => {
+      newTripPointButtonComponent.element.disabled = false;
+    });
 
   } catch (error) {
-    console.log(error);
+    newTripPointButtonComponent.element.disabled = true;
+    render(new FailedView, tripEventsElement);
   }
 })();
 
