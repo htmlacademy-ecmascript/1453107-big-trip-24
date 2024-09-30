@@ -29,6 +29,10 @@ export default class HeaderPresenter {
   init() {
     this.#setFilteredTripPoints();
 
+    if (this.#filteredTripPoints.length === 0) {
+      return;
+    }
+
     const prevHeaderComponent = this.#headerComponent;
 
     this.#headerComponent = new HeaderView({
@@ -58,7 +62,7 @@ export default class HeaderPresenter {
 
   #getPrice() {
     const price = this.#filteredTripPoints.reduce(
-      (accumulator, currentValue) => accumulator + currentValue.base_price,
+      (accumulator, currentValue) => accumulator + currentValue.basePrice,
       0,
     );
     return price;
@@ -88,8 +92,8 @@ export default class HeaderPresenter {
   }
 
   #getDuration() {
-    const firstDate = this.#filteredTripPoints.at(0).date_from;
-    const lastDate = this.#filteredTripPoints.at(-1).date_to;
+    const firstDate = this.#filteredTripPoints.at(0).dateFrom;
+    const lastDate = this.#filteredTripPoints.at(-1).dateTo;
 
     const from = humanizeDate(firstDate, 'headerDate');
     const to = humanizeDate(lastDate, 'headerDate');

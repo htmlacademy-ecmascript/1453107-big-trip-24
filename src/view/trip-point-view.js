@@ -21,10 +21,10 @@ function createTripPointTemplate(tripPoint, destination, offers) {
 
   const {
     type,
-    date_from: dateFrom,
-    date_to: dateTo,
-    base_price: price,
-    is_favorite: isFavorite
+    dateFrom,
+    dateTo,
+    basePrice,
+    isFavorite
   } = tripPoint;
 
   const date = humanizeDate(dateFrom, 'date');
@@ -55,7 +55,7 @@ function createTripPointTemplate(tripPoint, destination, offers) {
           <p class="event__duration">${duration}</p>
         </div>
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${price}</span>
+          &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
 

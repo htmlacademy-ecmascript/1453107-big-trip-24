@@ -91,11 +91,11 @@ function getDuration(date1, date2) {
 
 function sortTripPointsByDay (pointA, pointB) {
 
-  if (dayjs.utc(pointA.date_from).diff(dayjs.utc(pointB.date_from)) < 0) {
+  if (dayjs.utc(pointA.dateFrom).diff(dayjs.utc(pointB.dateFrom)) < 0) {
     return -1;
   }
 
-  if (dayjs.utc(pointA.date_from).diff(dayjs.utc(pointB.date_from)) > 0) {
+  if (dayjs.utc(pointA.dateFrom).diff(dayjs.utc(pointB.dateFrom)) > 0) {
     return 1;
   }
 
@@ -104,13 +104,13 @@ function sortTripPointsByDay (pointA, pointB) {
 
 function sortTripPointsByTime (pointA, pointB) {
 
-  if (dayjs.utc(pointA.date_from).diff(dayjs.utc(pointA.date_to)) <
-      dayjs.utc(pointB.date_from).diff(dayjs.utc(pointB.date_to))) {
+  if (dayjs.utc(pointA.dateFrom).diff(dayjs.utc(pointA.dateTo)) <
+      dayjs.utc(pointB.dateFrom).diff(dayjs.utc(pointB.dateTo))) {
     return -1;
   }
 
-  if (dayjs.utc(pointA.date_from).diff(dayjs.utc(pointA.date_to)) >
-      dayjs.utc(pointB.date_from).diff(dayjs.utc(pointB.date_to))) {
+  if (dayjs.utc(pointA.dateFrom).diff(dayjs.utc(pointA.dateTo)) >
+      dayjs.utc(pointB.dateFrom).diff(dayjs.utc(pointB.dateTo))) {
     return 1;
   }
 
@@ -119,11 +119,11 @@ function sortTripPointsByTime (pointA, pointB) {
 
 function sortTripPointsByPrice (pointA, pointB) {
 
-  if (pointA.base_price > pointB.base_price) {
+  if (pointA.basePrice > pointB.basePrice) {
     return -1;
   }
 
-  if (pointA.base_price < pointB.base_price) {
+  if (pointA.basePrice < pointB.basePrice) {
     return 1;
   }
 

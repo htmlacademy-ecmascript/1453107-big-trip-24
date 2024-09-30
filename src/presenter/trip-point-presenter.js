@@ -118,15 +118,15 @@ export default class TripPointPresenter {
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
       UpdateType.MINOR,
-      {...this.#tripPoint, is_favorite: !this.#tripPoint.is_favorite}
+      {...this.#tripPoint, isFavorite: !this.#tripPoint.isFavorite}
     );
   };
 
   #handleFormSubmit = (update) => {
     const isMinorUpdate =
-      this.#tripPoint.date_from !== update.date_from ||
-      this.#tripPoint.date_to !== update.date_to ||
-      this.#tripPoint.base_price !== update.base_price;
+      this.#tripPoint.dateFrom !== update.dateFrom ||
+      this.#tripPoint.dateTo !== update.dateTo ||
+      this.#tripPoint.basePrice !== update.basePrice;
 
     this.#handleDataChange(
       UserAction.UPDATE_POINT,

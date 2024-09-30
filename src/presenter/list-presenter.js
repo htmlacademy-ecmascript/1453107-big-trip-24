@@ -9,6 +9,7 @@ import NewTripPointPresenter from './new-trip-point-presenter.js';
 import ListView from '../view/list-view.js';
 import ListSortView from '../view/list-sort-view.js';
 import NoTripPointsView from '../view/no-trip-points-vew.js';
+import LoadingView from '../view/loading-view.js';
 
 
 export default class ListPresenter {
@@ -26,9 +27,11 @@ export default class ListPresenter {
   #listComponent = new ListView();
   #noTripPointsComponent = null;
   #sortComponent = null;
+  #loadingComponent = new LoadingView();
 
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
 
   constructor({ listContainer, tripPointsModel, destinationsModel, offersModel, filterModel, onNewTripPointDestroy }) {
@@ -97,6 +100,11 @@ export default class ListPresenter {
   #renderList() {
     render(this.#listComponent, this.#listContainer);
 
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const tripPoints = this.tripPoints;
     const tripPointCount = tripPoints.length;
 
@@ -150,8 +158,17 @@ export default class ListPresenter {
         this.#clearList({ resetRenderedTripPointsCount: true, resetSortType: true });
         this.#renderList();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderList();
+        break;
     }
   };
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#listComponent.element, RenderPosition.AFTERBEGIN);
+  }
 
   #renderSort() {
     this.#sortComponent = new ListSortView({
@@ -184,6 +201,7 @@ export default class ListPresenter {
     this.#tripPointsPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#noTripPointsComponent) {
       remove(this.#noTripPointsComponent);

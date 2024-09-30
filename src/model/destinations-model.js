@@ -1,26 +1,40 @@
 export default class DestinationsModel {
 
-  #data = null;
+  #destinations = [];
+  #destinationsApiService = null;
 
-  constructor(data) {
-    this.#data = data;
-  }
-
-  getDestinationInfoById(destinationId) {
-    return this.#data
-      .filter((destinationItem) => destinationItem.id === destinationId)[0];
-  }
-
-  getDestinationInfoByName(destinationName) {
-    return this.#data
-      .filter((destinationItem) => destinationItem.name === destinationName)[0];
-  }
-
-  getDestinationNames() {
-    return this.#data.map((destination) => destination.name);
+  constructor({ destinationsApiService }) {
+    this.#destinationsApiService = destinationsApiService;
   }
 
   get destinations() {
-    return this.#data;
+    return this.#destinations;
+  }
+
+  async init() {
+    try {
+      this.#destinations = await this.#destinationsApiService.destinations;
+    } catch (error) {
+      throw new Error('destinations!');
+    }
+  }
+
+  getDestinationInfoById(destinationId) {
+    const destinationInfo = this.#destinations
+      .find((destinationItem) => destinationItem.id === destinationId);
+
+    return destinationInfo;
+  }
+
+  getDestinationInfoByName(destinationName) {
+    const destinationInfo = this.#destinations
+      .find((destinationItem) => destinationItem.name === destinationName);
+
+    return destinationInfo;
+  }
+
+  getDestinationNames() {
+    const destinationNames = this.#destinations.map((destination) => destination.name);
+    return destinationNames;
   }
 }
