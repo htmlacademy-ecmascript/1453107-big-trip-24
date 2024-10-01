@@ -66,7 +66,7 @@ export default class HeaderPresenter {
     const price = this.#filteredTripPoints.reduce(
       (accumulator, currentValue) => {
         const totalOffersPrice = this.#offersModel.getTotalOffersPrice(currentValue.type, currentValue.offers);
-        
+
         accumulator = accumulator + currentValue.basePrice + totalOffersPrice;
 
         return accumulator;
@@ -88,15 +88,12 @@ export default class HeaderPresenter {
 
     const numberOfCities = cities.length;
 
-    if (numberOfCities === 1) {
-      return cities[0];
+    if (numberOfCities <= 3) {
+      const route = cities.reduce(((accumulator, currentValue) => `${accumulator}${currentValue} — `), '').slice(0, -3);
+      return route;
     }
 
-    if (numberOfCities >= 3) {
-      return `${cities[0]} — ... — ${cities[numberOfCities - 1]}`;
-    }
-
-    return `${cities[0]} — ${cities[1]}`;
+    return `${cities[0]} — ... — ${cities[numberOfCities - 1]}`;
   }
 
   #getDuration() {
