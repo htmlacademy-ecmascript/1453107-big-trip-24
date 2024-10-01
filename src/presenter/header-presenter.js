@@ -31,10 +31,6 @@ export default class HeaderPresenter {
   init() {
     this.#setFilteredTripPoints();
 
-    if (this.#filteredTripPoints.length === 0) {
-      return;
-    }
-
     const prevHeaderComponent = this.#headerComponent;
 
     this.#headerComponent = new HeaderView({
@@ -50,9 +46,15 @@ export default class HeaderPresenter {
 
     replace(this.#headerComponent, prevHeaderComponent);
     remove(prevHeaderComponent);
+
+    if (this.#filteredTripPoints.length === 0) {
+      remove(this.#headerComponent);
+      this.#headerComponent = null;
+    }
   }
 
   #handleModelEvent = () => {
+    this.#filteredTripPoints = [];
     this.init();
   };
 
@@ -97,20 +99,20 @@ export default class HeaderPresenter {
   }
 
   #getDuration() {
-    const firstDate = this.#filteredTripPoints.at(0).dateFrom;
-    const lastDate = this.#filteredTripPoints.at(-1).dateTo;
+    const firstDate = this.#filteredTripPoints.at(0)?.dateFrom;
+    const lastDate = this.#filteredTripPoints.at(-1)?.dateTo;
 
-    const from = humanizeDate(firstDate, 'headerDate');
-    const to = humanizeDate(lastDate, 'headerDate');
+    const dateFrom = humanizeDate(firstDate, 'headerDate');
+    const dateTo = humanizeDate(lastDate, 'headerDate');
 
-    if (this.#filteredTripPoints.length === 1) {
-      return from;
+    if (!firstDate && !lastDate) {
+      return '';
     }
 
-    if (new Date(firstDate).getUTCMonth() === new Date(lastDate).getUTCMonth()) {
-      return `${parseInt(from, 10)} &mdash; ${to}`;
+    if (new Date(firstDate) === new Date(lastDate)) {
+      return `${parseInt(dateFrom, 10)} &mdash; ${dateTo}`;
     }
 
-    return `${from} &mdash; ${to}`;
+    return `${dateFrom} &mdash; ${dateTo}`;
   }
 }

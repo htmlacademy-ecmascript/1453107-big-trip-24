@@ -37,14 +37,14 @@ export default class FilterPresenter {
         count: filter[FilterType.FUTURE](tripPoints).length,
       },
       {
-        type: FilterType.PAST,
-        name: 'PAST',
-        count: filter[FilterType.PAST](tripPoints).length,
-      },
-      {
         type: FilterType.PRESENT,
         name: 'PRESENT',
         count: filter[FilterType.PRESENT](tripPoints).length,
+      },
+      {
+        type: FilterType.PAST,
+        name: 'PAST',
+        count: filter[FilterType.PAST](tripPoints).length,
       },
     ];
   }

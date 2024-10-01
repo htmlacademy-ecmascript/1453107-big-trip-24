@@ -171,7 +171,6 @@ export default class TripPointPresenter {
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       update,
     );
-    // this.#replaceFormToCard();
   };
 
   #handleDeleteClick = (tripPoint) => {

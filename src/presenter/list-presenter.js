@@ -89,6 +89,11 @@ export default class ListPresenter {
   createTripPoint() {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
+    if (this.#noTripPointsComponent) {
+      remove(this.#noTripPointsComponent);
+    }
+
     this.#newTripPointPresenter.init();
   }
 
@@ -116,15 +121,19 @@ export default class ListPresenter {
       return;
     }
 
+    this.checkForTripPoint();
+
+    this.#renderSort();
+    this.#renderTripPointsList();
+  }
+
+  checkForTripPoint() {
     const tripPoints = this.tripPoints;
     const tripPointCount = tripPoints.length;
 
     if (tripPointCount === 0) {
       this.#renderNoTripPoints();
     }
-
-    this.#renderSort();
-    this.#renderTripPointsList();
   }
 
   #handleSortTypeChange = (sortType) => {
@@ -203,6 +212,10 @@ export default class ListPresenter {
   }
 
   #renderSort() {
+    if (this.tripPoints.length === 0) {
+      return;
+    }
+
     this.#sortComponent = new ListSortView({
       currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange,

@@ -24,7 +24,7 @@ function convertLocalToUtc(localDate) {
 }
 
 function humanizeDate(date, format) {
-  return date ? dayjs(date).utc().format(FORMATS[format]) : '';
+  return date ? dayjs(date).format(FORMATS[format]) : '';
 }
 
 function getDuration(date1, date2) {

@@ -68,6 +68,7 @@ const newTripPointButtonComponent = new NewTripPointButtonView({
 });
 
 function handleNewTripPointFormClose() {
+  listPresenter.checkForTripPoint();
   newTripPointButtonComponent.element.disabled = false;
 }
 
@@ -92,6 +93,6 @@ render(newTripPointButtonComponent, headerElement);
   }
 })();
 
-
+listPresenter.init();
 filterPresenter.init();
 headerPresenter.init();

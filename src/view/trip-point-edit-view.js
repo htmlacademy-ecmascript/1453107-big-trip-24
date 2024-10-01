@@ -3,7 +3,7 @@ import he from 'he';
 
 import { EVENT_TYPES } from '../const.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
-import { humanizeDate, convertLocalToUtc } from '../utils/point.js';
+import { humanizeDate } from '../utils/point.js';
 
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
@@ -18,12 +18,11 @@ function createOffersSectionTemplate(selectedOffers, allOffers, isDisabled) {
         ${allOffers.map((offer) => (`
           <div class="event__offer-selector">
             <input
-              class="event__offer-checkbox
-              visually-hidden"
+              class="event__offer-checkbox visually-hidden"
               id="${offer.id}"
               type="checkbox"
               name="${offer.title}"
-              ${selectedOffers.includes(offer) && 'checked'}
+              ${selectedOffers.includes(offer) ? 'checked' : ''}
               ${isDisabled ? 'disabled' : ''}
             >
             <label class="event__offer-label" for="${offer.id}">
@@ -55,7 +54,7 @@ function createDestinationSectionTemplate({ description, pictures }) {
           <div class="event__photos-tape">
             ${pictures.map((picture) => (`
               <img class="event__photo" src="${picture.src}" alt="${picture.description}">
-            `))}
+            `)).join('')}
           </div>
         </div>`)
         : ''
@@ -106,25 +105,22 @@ function addButtons(isNewPoint, isDisabled, isSaving, isDeleting) {
 
     ${isNewPoint
       ? `<button
-        class="event__reset-btn"
-        type="reset"
-        ${isDisabled ? 'disabled' : ''}
+          class="event__reset-btn"
+          type="reset"
       >
       Cancel
       </button>`
       : `<button
           class="event__reset-btn"
           type="reset"
-          ${isDisabled ? 'disabled' : ''}
         >
           ${isDeleting ? 'Deleting...' : 'Delete'}
         </button>
         <button
           class="event__rollup-btn"
           type="button"
-          ${isDisabled ? 'disabled' : ''}
         >
-            <span class="visually-hidden">Open event</span>
+          <span class="visually-hidden">Open event</span>
         </button>`
     }
   `);
@@ -168,14 +164,12 @@ function createTripPointEditTemplate(tripPoint, destinationNames, isNewPoint) {
               ${type}
             </label>
             <input
-              class="event__input
-              event__input--destination"
+              class="event__input event__input--destination"
               id="event-destination-1"
               type="text"
               name="event-destination"
               value="${destination ? he.encode(destination.name) : ''}"
               list="destination-list-1"
-              ${isDisabled ? 'disabled' : ''}
             >
             <datalist id="destination-list-1">
               ${destinationNames.map((destinationName) => (`
@@ -413,17 +407,8 @@ export default class TripPointEditView extends AbstractStatefulView {
     }
   };
 
-  #hasEmptyFormFields() {
-    return !this._state.dateFrom || !this._state.dateTo || !this._state.destination || !this._state.basePrice;
-  }
-
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-
-    if (this.#hasEmptyFormFields()) {
-      return;
-    }
-
     this.#handleFormSubmit(TripPointEditView.parseStateToTripPoint(this._state));
   };
 
@@ -469,7 +454,7 @@ export default class TripPointEditView extends AbstractStatefulView {
     }
 
     this.updateElement({
-      [config.element.dataset.date]: new Date(convertLocalToUtc(userDate))
+      [config.element.dataset.date]: new Date(userDate)
     });
   };
 

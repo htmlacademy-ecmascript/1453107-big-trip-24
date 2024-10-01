@@ -48,9 +48,9 @@ function createTripPointTemplate(tripPoint, destination, offers) {
         <h3 class="event__title">${type} ${destination ? he.encode(destination.name) : ''}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime=${dateFrom}>${timeStart}</time>
+            <time class="event__start-time" datetime=${timeStart}>${timeStart}</time>
             &mdash;
-            <time class="event__end-time" datetime=${dateTo}>${timeEnd}</time>
+            <time class="event__end-time" datetime=${timeEnd}>${timeEnd}</time>
           </p>
           <p class="event__duration">${duration}</p>
         </div>
