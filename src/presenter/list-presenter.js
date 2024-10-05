@@ -97,6 +97,15 @@ export default class ListPresenter {
     this.#newTripPointPresenter.init();
   }
 
+  checkForTripPoint() {
+    const tripPoints = this.tripPoints;
+    const tripPointCount = tripPoints.length;
+
+    if (tripPointCount === 0) {
+      this.#renderNoTripPoints();
+    }
+  }
+
   #renderTripPoints(tripPoints) {
     tripPoints.forEach((tripPoint) => this.#renderTripPoint(tripPoint));
   }
@@ -125,15 +134,6 @@ export default class ListPresenter {
 
     this.#renderSort();
     this.#renderTripPointsList();
-  }
-
-  checkForTripPoint() {
-    const tripPoints = this.tripPoints;
-    const tripPointCount = tripPoints.length;
-
-    if (tripPointCount === 0) {
-      this.#renderNoTripPoints();
-    }
   }
 
   #handleSortTypeChange = (sortType) => {

@@ -1,6 +1,6 @@
+import { humanizeDate } from '../utils/point.js';
 import { filter } from '../utils/filter.js';
 import { render, remove, replace, RenderPosition } from '../framework/render.js';
-import { humanizeDate } from '../utils/point.js';
 
 import HeaderView from '../view/header-view.js';
 
@@ -25,7 +25,6 @@ export default class HeaderPresenter {
     this.#filterModel = filterModel;
 
     this.#tripPointsModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   init() {

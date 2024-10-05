@@ -1,12 +1,9 @@
-import { UserAction, UpdateType } from '../const.js';
+import { UserAction, UpdateType, Mode } from '../const.js';
 import { render, replace, remove } from '../framework/render.js';
+
 import TripPointView from '../view/trip-point-view.js';
 import TripPointEditView from '../view/trip-point-edit-view.js';
 
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
 
 export default class TripPointPresenter {
 
@@ -67,7 +64,6 @@ export default class TripPointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      // replace(this.#tripPointEditComponent, prevTripPointEditComponent);
       replace(this.#tripPointComponent, prevTripPointEditComponent);
       this.#mode = Mode.DEFAULT;
     }
@@ -149,6 +145,7 @@ export default class TripPointPresenter {
   };
 
   #handleFormCloseClick = () => {
+    this.#tripPointEditComponent.reset(this.#tripPoint);
     this.#replaceFormToCard();
   };
 

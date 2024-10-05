@@ -45,6 +45,18 @@ const UpdateType = {
   INIT: 'INIT',
 };
 
+const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE'
+};
+
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 
 export {
   EVENT_TYPES,
@@ -54,5 +66,7 @@ export {
   SortType,
   DisabledSortType,
   UserAction,
-  UpdateType
+  UpdateType,
+  Method,
+  Mode
 };

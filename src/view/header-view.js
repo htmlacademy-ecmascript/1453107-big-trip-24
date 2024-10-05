@@ -1,29 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-// function createHeaderTemplate(route, duration, price) {
-//   return (`
-//     <section class="trip-main__trip-info  trip-info">
-
-//     ${route
-//       ? (`<div class="trip-info__main">
-//         ${route ? (`<h1 class="trip-info__title">${route}</h1>`) : ''}
-
-//         ${duration ? (`<p class="trip-info__dates">${duration}</p>`) : ''}
-//       </div>`)
-//       : ''
-//     }
-
-
-//       ${price === 0
-//       ? ''
-//       : (`<p class="trip-info__cost">
-//           Total: &euro;&nbsp;<span class="trip-info__cost-value">${price}</span>
-//         </p>`)
-//     }
-
-//     </section>
-//   `);
-// }
 
 function createHeaderTemplate(route, duration, price) {
   return (`
