@@ -1,5 +1,4 @@
 import { humanizeDate } from '../utils/point.js';
-import { filter } from '../utils/filter.js';
 import { render, remove, replace, RenderPosition } from '../framework/render.js';
 
 import HeaderView from '../view/header-view.js';
@@ -15,7 +14,7 @@ export default class HeaderPresenter {
   #destinationsModel = null;
   #filterModel = null;
 
-  #filteredTripPoints = [];
+  #tripPoints = [];
 
   constructor({ headerContainer, tripPointsModel, offersModel, destinationsModel, filterModel }) {
     this.#headerContainer = headerContainer;
@@ -25,10 +24,11 @@ export default class HeaderPresenter {
     this.#filterModel = filterModel;
 
     this.#tripPointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   init() {
-    this.#setFilteredTripPoints();
+    this.#tripPoints = this.#tripPointsModel.tripPoints;
 
     const prevHeaderComponent = this.#headerComponent;
 
@@ -46,25 +46,19 @@ export default class HeaderPresenter {
     replace(this.#headerComponent, prevHeaderComponent);
     remove(prevHeaderComponent);
 
-    if (this.#filteredTripPoints.length === 0) {
+    if (this.#tripPoints.length === 0) {
       remove(this.#headerComponent);
       this.#headerComponent = null;
     }
   }
 
   #handleModelEvent = () => {
-    this.#filteredTripPoints = [];
+    this.#tripPoints = [];
     this.init();
   };
 
-  #setFilteredTripPoints() {
-    const filterType = this.#filterModel.filter;
-    const tripPoints = this.#tripPointsModel.tripPoints;
-    this.#filteredTripPoints = filter[filterType](tripPoints);
-  }
-
   #getPrice() {
-    const price = this.#filteredTripPoints.reduce(
+    const price = this.#tripPoints.reduce(
       (accumulator, currentValue) => {
         const totalOffersPrice = this.#offersModel.getTotalOffersPrice(currentValue.type, currentValue.offers);
 
@@ -80,7 +74,7 @@ export default class HeaderPresenter {
   #getRoute() {
     const cities = [];
 
-    this.#filteredTripPoints.forEach((point) => {
+    this.#tripPoints.forEach((point) => {
       const name = this.#destinationsModel.getDestinationInfoById(point.destination).name;
       if (!cities.includes(name)) {
         cities.push(name);
@@ -98,8 +92,8 @@ export default class HeaderPresenter {
   }
 
   #getDuration() {
-    const firstDate = this.#filteredTripPoints.at(0)?.dateFrom;
-    const lastDate = this.#filteredTripPoints.at(-1)?.dateTo;
+    const firstDate = this.#tripPoints.at(0)?.dateFrom;
+    const lastDate = this.#tripPoints.at(-1)?.dateTo;
 
     const dateFrom = humanizeDate(firstDate, 'headerDate');
     const dateTo = humanizeDate(lastDate, 'headerDate');
