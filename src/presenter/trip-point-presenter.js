@@ -127,6 +127,7 @@ export default class TripPointPresenter {
   }
 
   #replaceFormToCard() {
+    this.#tripPointEditComponent.reset(this.#tripPoint);
     replace(this.#tripPointComponent, this.#tripPointEditComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = Mode.DEFAULT;
@@ -145,7 +146,6 @@ export default class TripPointPresenter {
   };
 
   #handleFormCloseClick = () => {
-    this.#tripPointEditComponent.reset(this.#tripPoint);
     this.#replaceFormToCard();
   };
 
