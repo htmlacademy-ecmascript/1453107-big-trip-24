@@ -1,5 +1,5 @@
-import AbstractView from '../framework/view/abstract-view.js';
 import { SortType, DisabledSortType } from '../const.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createListSortTemplate(currentSortType) {
   return(`
@@ -39,12 +39,12 @@ export default class ListSortView extends AbstractView {
     this.element.addEventListener('change', this.#sortTypeChangeHandler);
   }
 
+  get template() {
+    return createListSortTemplate(this.#currentSortType);
+  }
+
   #sortTypeChangeHandler = (evt) => {
     evt.preventDefault();
     this.#handleSortTypeChange(evt.target.dataset.sortType);
   };
-
-  get template() {
-    return createListSortTemplate(this.#currentSortType);
-  }
 }

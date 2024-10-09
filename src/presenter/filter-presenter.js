@@ -1,7 +1,7 @@
+import { FilterType, UpdateType } from '../const.js';
+import { filter } from '../utils/filter.js';
 import { render, replace, remove } from '../framework/render.js';
 import FilterView from '../view/filter-view.js';
-import { filter } from '../utils/filter.js';
-import { FilterType, UpdateType } from '../const.js';
 
 
 export default class FilterPresenter {
@@ -37,14 +37,14 @@ export default class FilterPresenter {
         count: filter[FilterType.FUTURE](tripPoints).length,
       },
       {
-        type: FilterType.PAST,
-        name: 'PAST',
-        count: filter[FilterType.PAST](tripPoints).length,
-      },
-      {
         type: FilterType.PRESENT,
         name: 'PRESENT',
         count: filter[FilterType.PRESENT](tripPoints).length,
+      },
+      {
+        type: FilterType.PAST,
+        name: 'PAST',
+        count: filter[FilterType.PAST](tripPoints).length,
       },
     ];
   }

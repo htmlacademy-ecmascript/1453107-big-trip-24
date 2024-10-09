@@ -1,6 +1,5 @@
-import { filter } from '../utils/filter.js';
-import { render, remove, replace, RenderPosition } from '../framework/render.js';
 import { humanizeDate } from '../utils/point.js';
+import { render, remove, replace, RenderPosition } from '../framework/render.js';
 
 import HeaderView from '../view/header-view.js';
 
@@ -15,7 +14,7 @@ export default class HeaderPresenter {
   #destinationsModel = null;
   #filterModel = null;
 
-  #filteredTripPoints = [];
+  #tripPoints = [];
 
   constructor({ headerContainer, tripPointsModel, offersModel, destinationsModel, filterModel }) {
     this.#headerContainer = headerContainer;
@@ -29,11 +28,7 @@ export default class HeaderPresenter {
   }
 
   init() {
-    this.#setFilteredTripPoints();
-
-    if (this.#filteredTripPoints.length === 0) {
-      return;
-    }
+    this.#tripPoints = this.#tripPointsModel.tripPoints;
 
     const prevHeaderComponent = this.#headerComponent;
 
@@ -50,23 +45,23 @@ export default class HeaderPresenter {
 
     replace(this.#headerComponent, prevHeaderComponent);
     remove(prevHeaderComponent);
+
+    if (this.#tripPoints.length === 0) {
+      remove(this.#headerComponent);
+      this.#headerComponent = null;
+    }
   }
 
   #handleModelEvent = () => {
+    this.#tripPoints = [];
     this.init();
   };
 
-  #setFilteredTripPoints() {
-    const filterType = this.#filterModel.filter;
-    const tripPoints = this.#tripPointsModel.tripPoints;
-    this.#filteredTripPoints = filter[filterType](tripPoints);
-  }
-
   #getPrice() {
-    const price = this.#filteredTripPoints.reduce(
+    const price = this.#tripPoints.reduce(
       (accumulator, currentValue) => {
         const totalOffersPrice = this.#offersModel.getTotalOffersPrice(currentValue.type, currentValue.offers);
-        
+
         accumulator = accumulator + currentValue.basePrice + totalOffersPrice;
 
         return accumulator;
@@ -79,7 +74,7 @@ export default class HeaderPresenter {
   #getRoute() {
     const cities = [];
 
-    this.#filteredTripPoints.forEach((point) => {
+    this.#tripPoints.forEach((point) => {
       const name = this.#destinationsModel.getDestinationInfoById(point.destination).name;
       if (!cities.includes(name)) {
         cities.push(name);
@@ -88,32 +83,29 @@ export default class HeaderPresenter {
 
     const numberOfCities = cities.length;
 
-    if (numberOfCities === 1) {
-      return cities[0];
+    if (numberOfCities <= 3) {
+      const route = cities.reduce(((accumulator, currentValue) => `${accumulator}${currentValue} — `), '').slice(0, -3);
+      return route;
     }
 
-    if (numberOfCities >= 3) {
-      return `${cities[0]} — ... — ${cities[numberOfCities - 1]}`;
-    }
-
-    return `${cities[0]} — ${cities[1]}`;
+    return `${cities[0]} — ... — ${cities[numberOfCities - 1]}`;
   }
 
   #getDuration() {
-    const firstDate = this.#filteredTripPoints.at(0).dateFrom;
-    const lastDate = this.#filteredTripPoints.at(-1).dateTo;
+    const firstDate = this.#tripPoints.at(0)?.dateFrom;
+    const lastDate = this.#tripPoints.at(-1)?.dateTo;
 
-    const from = humanizeDate(firstDate, 'headerDate');
-    const to = humanizeDate(lastDate, 'headerDate');
+    const dateFrom = humanizeDate(firstDate, 'headerDate');
+    const dateTo = humanizeDate(lastDate, 'headerDate');
 
-    if (this.#filteredTripPoints.length === 1) {
-      return from;
+    if (!firstDate && !lastDate) {
+      return '';
     }
 
-    if (new Date(firstDate).getUTCMonth() === new Date(lastDate).getUTCMonth()) {
-      return `${parseInt(from, 10)} &mdash; ${to}`;
+    if (new Date(firstDate) === new Date(lastDate)) {
+      return `${parseInt(dateFrom, 10)} &mdash; ${dateTo}`;
     }
 
-    return `${from} &mdash; ${to}`;
+    return `${dateFrom} &mdash; ${dateTo}`;
   }
 }
