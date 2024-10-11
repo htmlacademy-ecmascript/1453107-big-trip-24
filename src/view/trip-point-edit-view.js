@@ -459,6 +459,12 @@ export default class TripPointEditView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+
+    if (!this._state.dateFrom || !this._state.dateTo) {
+      this.shake();
+      return;
+    }
+
     this.#handleFormSubmit(TripPointEditView.parseStateToTripPoint(this._state));
   };
 

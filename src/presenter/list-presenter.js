@@ -171,9 +171,6 @@ export default class ListPresenter {
       case UserAction.ADD_POINT:
         this.#newTripPointPresenter.setSaving();
         try {
-          if (!update.dateFrom || !update.dateTo) {
-            throw new Error();
-          }
           await this.#tripPointsModel.addTripPoint(updateType, update);
         } catch (error) {
           this.#newTripPointPresenter.setAborting();
