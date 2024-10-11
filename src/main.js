@@ -81,6 +81,8 @@ function handleNewTripPointButtonClick() {
 render(newTripPointButtonComponent, headerElement);
 
 (async () => {
+  newTripPointButtonComponent.element.disabled = true;
+
   try {
     await destinationsModel.init();
     await offersModel.init();
@@ -91,6 +93,9 @@ render(newTripPointButtonComponent, headerElement);
   } catch (error) {
     newTripPointButtonComponent.element.disabled = true;
     render(new FailedView, tripEventsElement);
+
+  } finally {
+    listPresenter.removeLoadingComponent();
   }
 })();
 

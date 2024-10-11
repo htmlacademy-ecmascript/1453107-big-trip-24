@@ -106,6 +106,10 @@ export default class ListPresenter {
     }
   }
 
+  removeLoadingComponent() {
+    remove(this.#loadingComponent);
+  }
+
   #renderTripPoints(tripPoints) {
     tripPoints.forEach((tripPoint) => this.#renderTripPoint(tripPoint));
   }
@@ -201,7 +205,6 @@ export default class ListPresenter {
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
-        remove(this.#loadingComponent);
         this.#renderList();
         break;
     }
