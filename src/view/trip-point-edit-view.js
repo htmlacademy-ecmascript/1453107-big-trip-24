@@ -153,7 +153,13 @@ function createTripPointEditTemplate(tripPoint, destinationNames, isNewPoint) {
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
+            <input
+              class="event__type-toggle
+              visually-hidden"
+              id="event-type-toggle-1"
+              type="checkbox"
+              ${isDisabled ? 'disabled' : ''}
+            >
 
             ${createEventTypeList({ activeType: type, isDisabled })}
 
@@ -170,6 +176,7 @@ function createTripPointEditTemplate(tripPoint, destinationNames, isNewPoint) {
               name="event-destination"
               value="${destination ? he.encode(destination.name) : ''}"
               list="destination-list-1"
+              required
             >
             <datalist id="destination-list-1">
               ${destinationNames.map((destinationName) => (`
@@ -210,10 +217,13 @@ function createTripPointEditTemplate(tripPoint, destinationNames, isNewPoint) {
             <input
               class="event__input  event__input--price"
               id="event-price-1"
-              type="text"
+              type="number"
               name="event-price"
               value="${basePrice}"
               ${isDisabled ? 'disabled' : ''}
+              min="1"
+              max="100000"
+              required
             >
           </div>
 

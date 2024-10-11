@@ -30,6 +30,10 @@ export default class HeaderPresenter {
   init() {
     this.#tripPoints = this.#tripPointsModel.tripPoints;
 
+    if (this.#tripPoints.length === 0) {
+      return;
+    }
+
     const prevHeaderComponent = this.#headerComponent;
 
     this.#headerComponent = new HeaderView({
@@ -45,11 +49,6 @@ export default class HeaderPresenter {
 
     replace(this.#headerComponent, prevHeaderComponent);
     remove(prevHeaderComponent);
-
-    if (this.#tripPoints.length === 0) {
-      remove(this.#headerComponent);
-      this.#headerComponent = null;
-    }
   }
 
   #handleModelEvent = () => {

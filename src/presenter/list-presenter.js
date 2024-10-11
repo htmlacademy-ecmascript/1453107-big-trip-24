@@ -106,6 +106,10 @@ export default class ListPresenter {
     }
   }
 
+  removeLoadingComponent() {
+    remove(this.#loadingComponent);
+  }
+
   #renderTripPoints(tripPoints) {
     tripPoints.forEach((tripPoint) => this.#renderTripPoint(tripPoint));
   }
@@ -167,6 +171,9 @@ export default class ListPresenter {
       case UserAction.ADD_POINT:
         this.#newTripPointPresenter.setSaving();
         try {
+          if (!update.dateFrom || !update.dateTo) {
+            throw new Error();
+          }
           await this.#tripPointsModel.addTripPoint(updateType, update);
         } catch (error) {
           this.#newTripPointPresenter.setAborting();
@@ -201,7 +208,6 @@ export default class ListPresenter {
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
-        remove(this.#loadingComponent);
         this.#renderList();
         break;
     }
